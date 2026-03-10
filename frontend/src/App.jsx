@@ -1,11 +1,11 @@
-import Productores from "./components/Productores";
+import Productores from "./pages/Productores";
+import DashboardLayout from "./layout/DashboardLayout";
 
 function App() {
   return (
-    <div>
-      <h1>Sistema Beneficio de Café</h1>
+    <DashboardLayout>
       <Productores />
-    </div>
+    </DashboardLayout>
   );
 }
 
