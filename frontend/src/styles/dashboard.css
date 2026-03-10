@@ -1,0 +1,164 @@
+/* ===== Layout ===== */
+
+.dashboard{
+  display:grid;
+  grid-template-columns:240px 1fr;
+  height:100vh;
+  background:#f5f2eb;
+}
+
+.main{
+  display:flex;
+  flex-direction:column;
+}
+
+.content{
+  padding:30px;
+  background:#f8f6f2;
+  color:#2c2c2c;
+  flex:1;
+}
+
+/* ===== Sidebar ===== */
+
+.sidebar{
+  background:#2D5A27;
+  color:white;
+  padding:20px;
+}
+
+.sidebar h2{
+  color:white;
+  margin-bottom:20px;
+}
+
+.sidebar ul{
+  list-style:none;
+  padding:0;
+}
+
+.sidebar li{
+  padding:12px;
+  border-radius:6px;
+  margin-bottom:5px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.sidebar li:hover{
+  background:#3E7039;
+}
+
+.active{
+  background:#3E7039;
+}
+
+/* ===== Header ===== */
+
+.header{
+  background:white;
+  padding:20px 30px;
+  border-bottom:1px solid #e5e5e5;
+  font-weight:600;
+  font-size:22px;
+}
+
+/* ===== Tabla ===== */
+
+.table-container{
+  background:white;
+  border-radius:10px;
+  padding:20px;
+  box-shadow:0 3px 10px rgba(0,0,0,0.08);
+}
+
+.table-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+thead{
+  background:#f2efe8;
+}
+
+th{
+  font-weight:600;
+  text-align:left;
+}
+
+th,td{
+  padding:14px;
+  border-bottom:1px solid #eee;
+}
+
+tr:hover{
+  background:#f9f7f3;
+}
+
+/* ===== Botones ===== */
+
+.btn-primary{
+  background:#b8743c;
+  color:white;
+  border:none;
+  padding:10px 16px;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:500;
+}
+
+.btn-primary:hover{
+  background:#9c6232;
+}
+
+.btn-edit,
+.btn-delete{
+  width:90px;
+  padding:7px 0;
+  border:none;
+  border-radius:6px;
+  color:white;
+  cursor:pointer;
+  font-weight:500;
+  text-align:center;
+}
+
+.btn-edit{
+  background:#3c7a5a;
+}
+
+.btn-delete{
+  background:#8c4b2a;
+}
+
+.btn-edit{
+  background:#3E7039;
+}
+
+.actions .btn-edit,
+.actions .btn-delete{
+  width:100px;
+}
+
+/* ===== Acciones tabla ===== */
+
+.actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+
+/* ===== Tipografía ===== */
+
+h2, h3{
+  color:#2c2c2c;
+}
+
