@@ -1,0 +1,176 @@
+/* =====================================================
+   MODAL FORMULARIO PRODUCTOR
+   Ventana emergente para crear o editar productores
+===================================================== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.35);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 1000;
+}
+
+/* =====================================================
+   CONTENEDOR DEL MODAL
+===================================================== */
+
+.modal {
+  background: white;
+
+  width: 520px;
+  max-width: 90%;
+
+  padding: 30px;
+
+  border-radius: 12px;
+
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+
+  position: relative;
+}
+
+.modal-close {
+
+  position: absolute;
+  top: 15px;
+  right: 15px;
+
+  width: 32px;
+  height: 32px;
+
+  border-radius: 50%;
+  border: none;
+
+  background: #a61515;
+  color: white;
+
+  font-size: 16px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: all 0.2s ease;
+
+}
+
+.modal-close:hover {
+
+  background: #ff0000;
+  transform: scale(1.1);
+
+}
+
+/* =====================================================
+   FORMULARIO PRODUCTOR
+   Organiza los campos en dos columnas
+===================================================== */
+
+.form-productor {
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr; /* dos columnas */
+
+  gap: 14px;
+
+}
+
+/* =====================================================
+   INPUTS Y SELECTS
+===================================================== */
+
+.form-productor input,
+.form-productor select {
+
+  width: 100%;
+
+  padding: 10px 12px;
+
+  border-radius: 6px;
+
+  border: 1px solid #ccc;
+
+  font-size: 14px;
+
+  background: white;
+
+  color: #333;
+
+  outline: none;
+
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* =====================================================
+   EFECTO CUANDO EL INPUT ESTÁ ACTIVO
+===================================================== */
+
+.form-productor input:focus,
+.form-productor select:focus {
+
+  border-color: #b8743c;
+
+  box-shadow: 0 0 0 2px rgba(184,116,60,0.2);
+
+}
+
+/* =====================================================
+   BOTONES DEL FORMULARIO
+   Ocupan todo el ancho del formulario
+===================================================== */
+
+.form-actions {
+
+  grid-column: span 2;
+
+  display: flex;
+
+  gap: 10px;
+
+  margin-top: 15px;
+
+}
+
+.form-actions button {
+
+  flex: 1; /* todos los botones del mismo tamaño */
+
+  height: 40px;
+
+  border-radius: 8px;
+
+  border: none;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+}
+
+/* =====================================================
+   MENSAJES DE ERROR
+===================================================== */
+
+.error-text {
+
+  grid-column: span 2;
+
+  color: red;
+
+  font-size: 12px;
+
+}
