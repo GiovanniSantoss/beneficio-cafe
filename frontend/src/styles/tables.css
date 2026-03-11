@@ -1,0 +1,56 @@
+/* ===== TABLAS ===== */
+
+.table-container {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  margin-top: 10px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+table {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+thead {
+  background: #f2efe8;
+}
+
+th {
+  text-align: left;
+  padding: 16px;
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+td {
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+tbody tr:nth-child(even) {
+  background: #faf9f7;
+}
+
+tbody tr:hover {
+  background: #edf4ec !important;
+}
+
+th:last-child,
+td:last-child {
+  text-align: center;
+}

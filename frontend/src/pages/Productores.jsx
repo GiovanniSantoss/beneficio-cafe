@@ -207,60 +207,113 @@ function Productores() {
 
       {showForm && (
 
-        <div style={{ marginTop: "20px", border: "1px solid #ccc", padding: "10px" }}>
+  <div className="modal-overlay">
 
-          <h3>{editarId ? "Editar Productor" : "Crear Nuevo Productor"}</h3>
+    <div className="modal">
 
-          {["rfc", "nombre", "apellido", "telefono", "comunidad", "localidad", "estado"].map(campo => (
-            <div key={campo} style={{ marginBottom: "8px" }}>
-              <input
-                type="text"
-                placeholder={campo.charAt(0).toUpperCase() + campo.slice(1)}
-                value={formProductor[campo] || ""}
-                onChange={e =>
-                  setFormProductor({
-                    ...formProductor,
-                    [campo]: e.target.value
-                  })
-                }
-              />
-              {errores[campo] && <div style={{ color: "red" }}>{errores[campo]}</div>}
-            </div>
-          ))}
+      <button
+        className="modal-close"
+        type="button"
+        onClick={() => setShowForm(false)}
+      >
+        ✕
+      </button>
 
-          <div style={{ marginBottom: "8px" }}>
-            <label>Género</label>
-            <select
-              value={formProductor.genero || ""}
-              onChange={e =>
-                setFormProductor({
-                  ...formProductor,
-                  genero: e.target.value
-                })
-              }
-            >
-              <option value="">Seleccione género</option>
-              <option value="MASCULINO">Masculino</option>
-              <option value="FEMENINO">Femenino</option>
-              
-            </select>
-          </div>
+      <h2>Registrar Productor</h2>
 
-          <div style={{ marginTop: "10px" }}>
-            <button onClick={handleGuardar}>
-              {editarId ? "Actualizar" : "Guardar"}
-            </button>
+      <form className="form-productor"
+  onSubmit={(e) => {
+    e.preventDefault();
+    handleGuardar();
+  }}
+>
 
-            <button
-              onClick={() => setShowForm(false)}
-              style={{ marginLeft: "10px" }}
-            >
-              Cancelar
-            </button>
-          </div>
+  {[
+    "nombre",
+    "apellido",
+    "rfc",
+    "telefono",
+    "comunidad",
+    "localidad",
+    "estado"
+  ].map(campo => (
+    <div key={campo}>
 
-        </div>
+      <input
+        type="text"
+        placeholder={campo.charAt(0).toUpperCase() + campo.slice(1)}
+        value={formProductor[campo] || ""}
+        onChange={e =>
+          setFormProductor({
+            ...formProductor,
+            [campo]: e.target.value
+          })
+        }
+      />
+
+      {errores[campo] && (
+        <div className="error-text">{errores[campo]}</div>
       )}
+
+    </div>
+  ))}
+
+  {/* GENERO */}
+  <div>
+
+    <select
+      value={formProductor.genero || ""}
+      onChange={e =>
+        setFormProductor({
+          ...formProductor,
+          genero: e.target.value
+        })
+      }
+    >
+
+      <option value="">Seleccione género</option>
+      <option value="MASCULINO">Masculino</option>
+      <option value="FEMENINO">Femenino</option>
+
+    </select>
+
+  </div>
+
+  {/* BOTONES */}
+  <div className="form-actions">
+
+    <button
+      type="button"
+      className="btn-clear"
+      onClick={() => {
+        setFormProductor(estadoInicial);
+        setErrores({});
+      }}
+    >
+      Limpiar
+    </button>
+
+    <button className="btn-primary" type="submit">
+      {editarId ? "Actualizar" : "Guardar"}
+    </button>
+
+    <button
+      type="button"
+      className="btn-cancel"
+      onClick={() => setShowForm(false)}
+    >
+      Cancelar
+    </button>
+
+  </div>
+
+</form>
+
+    </div>
+
+  </div>
+
+)}
 
     </div>
   );

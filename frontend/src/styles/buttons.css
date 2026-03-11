@@ -1,0 +1,73 @@
+/* ===== BOTONES ===== */
+
+.btn-primary {
+  background: #b8743c;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #9c6232;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(184,116,60,0.3);
+}
+
+
+.btn-edit {
+  background: #3E7039;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.btn-edit:hover {
+  background: #2d522a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(62,112,57,0.3);
+}
+
+.btn-delete {
+  background: #8c4b2a;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+  background: #6e3a21;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(140,75,42,0.3);
+}
+
+.btn-clear {
+  background: #3E7039;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.btn-clear:hover {
+  background: #2d522a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(62,112,57,0.3);
+}
+
+.btn-cancel {
+  background: #a61515;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background: #7d1010;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(166,21,21,0.3);
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
