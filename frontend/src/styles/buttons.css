@@ -71,3 +71,66 @@
   justify-content: center;
   gap: 8px;
 }
+
+/* btn estatus activo e inactivo */
+.status-activo{
+  background:#e6f4ea !important;
+  color:#2e7d32 !important;
+  padding:4px 8px;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:600;
+}
+
+.status-inactivo{
+  background:#fdecea !important;
+  color:#c62828 !important;
+  padding:4px 8px;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:600;
+}
+
+/*btn detalle css */
+.btn-details{
+  background:#0e75dcd1;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:13px;
+  margin-left:5px;
+  transition:0.2s;
+}
+
+.btn-details:hover{
+  background:#125aa3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(166,21,21,0.3);
+}
+
+
+.search-input {
+  padding: 8px 12px 8px 30px;   /* Top, derecha, bottom, left (espacio para la lupa) */
+  border-radius: 4px;
+  border: 1px solid #ccc;       /* Línea normal */
+  font-size: 1rem;
+  width: 250px;
+  color: #333;                  /* Color del texto */
+  background-color: #fff;       /* Fondo */
+  background: url('https://cdn-icons-png.flaticon.com/512/622/622669.png') no-repeat 8px center;
+  background-size: 16px;
+  transition: all 0.2s;
+}
+
+.search-input::placeholder {
+  color: #999;                  /* Color del placeholder */
+  opacity: 1;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
