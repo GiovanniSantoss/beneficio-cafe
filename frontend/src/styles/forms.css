@@ -174,3 +174,120 @@
   font-size: 12px;
 
 }
+
+/* etiquetas activo e inactivo */
+
+.modal-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.4);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+}
+
+.modal{
+  position:relative;
+  background:white;
+  padding:30px;
+  border-radius:12px;
+  width:500px;
+  max-width:90%;
+  box-shadow:0 20px 40px rgba(0,0,0,0.2);
+  animation:modalOpen .25s ease;
+}
+
+.modal-close{
+  position:absolute;
+  top:10px;
+  right:15px;
+  border:none;
+  background:#ef4444;
+  color:white;
+  border-radius:6px;
+  padding:6px 10px;
+  cursor:pointer;
+  font-size:14px;
+  transition:.2s;
+}
+
+.modal-close:hover{
+  background:#dc2626;
+}
+
+/* tarjeta de información del productor */
+
+.detalle-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.4);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+}
+
+.detalle-card{
+  background:white;
+  padding:30px;
+  border-radius:12px;
+  width:500px;
+  max-width:90%;
+  box-shadow:0 20px 40px rgba(0,0,0,0.2);
+  animation:modalOpen .25s ease;
+}
+
+.detalle-grid{
+  margin-top:20px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+.detalle-grid div{
+  background:#f8fafc;
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #e2e8f0;
+}
+
+.detalle-grid b{
+  display:block;
+  font-size:11px;
+  color:#64748b;
+  margin-bottom:4px;
+  text-transform:uppercase;
+}
+
+.btn-cerrar-detalle{
+  margin-top:20px;
+  border:none;
+  background:#ef4444;
+  color:white;
+  border-radius:6px;
+  padding:8px 14px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.btn-cerrar-detalle:hover{
+  background:#dc2626;
+}
+
+@keyframes modalOpen{
+  from{
+    opacity:0;
+    transform:scale(.9);
+  }
+  to{
+    opacity:1;
+    transform:scale(1);
+  }
+}
