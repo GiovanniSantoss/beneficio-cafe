@@ -13,7 +13,7 @@ html, body, #root {
 
 body {
   font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: #ffffff;
+  background: #FAF8F5;  /*fondo general*/
   color: #2c2c2c;
   line-height: 1.6;
 }

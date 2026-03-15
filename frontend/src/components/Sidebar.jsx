@@ -1,6 +1,6 @@
-export default function Sidebar(){
+export default function Sidebar({ setVista, vista }) {
 
-  return(
+  return (
 
     <div className="sidebar">
 
@@ -8,8 +8,27 @@ export default function Sidebar(){
 
       <ul>
 
-        <li>Inicio</li>
-        <li className="active">Productores</li>
+        <li
+          className={vista === "inicio" ? "active" : ""}
+          onClick={() => setVista("inicio")}
+        >
+          Inicio
+        </li>
+
+        <li
+          className={vista === "productores" ? "active" : ""}
+          onClick={() => setVista("productores")}
+        >
+          Productores
+        </li>
+
+        <li
+          className={vista === "cafetales" ? "active" : ""}
+          onClick={() => setVista("cafetales")}
+        >
+          Cafetales
+        </li>
+
         <li>Recepción</li>
         <li>Procesos</li>
         <li>Inventario</li>
@@ -20,7 +39,6 @@ export default function Sidebar(){
 
     </div>
 
-  )
+  );
 
 }
-
