@@ -28,7 +28,7 @@ table {
 }
 
 thead {
-  background: #f2efe8;
+  background: #f2efe8; /*Color fondo titulo de la tabla ID RFC ETC*/
 }
 
 th {
@@ -42,15 +42,15 @@ th {
 
 td {
   padding: 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0; /* Lineas columnas tabla */
 }
 
 tbody tr:nth-child(even) {
-  background: #faf9f7;
+  background: #faf9f7; /*Columnas*/
 }
 
 tbody tr:hover {
-  background: #edf4ec !important;
+  background: #edf4ec !important; /*Hober efecto de las columnas de la tabla*/
 }
 
 th:last-child,

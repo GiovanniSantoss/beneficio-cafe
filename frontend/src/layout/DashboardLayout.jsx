@@ -1,14 +1,14 @@
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout({ children, setVista, vista }) {
 
   return (
 
     <div className="dashboard">
 
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar setVista={setVista} vista={vista} />
 
       {/* Área principal */}
       <div className="main">

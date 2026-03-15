@@ -14,6 +14,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/productores/**").permitAll()
+                .requestMatchers("/cafetales/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form.disable())

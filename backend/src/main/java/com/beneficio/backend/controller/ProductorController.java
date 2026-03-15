@@ -63,6 +63,7 @@ public ResponseEntity<Productor> crear(@Valid @RequestBody Productor productor) 
 
         Productor productor = optional.get();
 
+        productor.setRfc(productorActualizado.getRfc());
         productor.setNombre(productorActualizado.getNombre());
         productor.setApellido(productorActualizado.getApellido());
         productor.setTelefono(productorActualizado.getTelefono());

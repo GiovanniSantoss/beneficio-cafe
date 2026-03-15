@@ -35,34 +35,37 @@ function Productores() {
   ) || [];
 
 
+  const cargarProductores = async () => {
+
+  try {
+
+    const res = await fetch("http://localhost:8080/productores");
+
+    const data = await res.json();
+
+    setProductores(data);
+
+  } catch (err) {
+
+    console.error(err);
+
+  }
+
+};
+
   // Cargar productores
   useEffect(() => {
 
-    const cargarProductores = async () => {
+  const cargar = async () => {
 
-      try {
+    await cargarProductores();
+    setLoading(false);
 
-        const res = await fetch("http://localhost:8080/productores");
+  };
 
-        if (!res.ok) throw new Error("Error al obtener productores");
+  cargar();
 
-        const data = await res.json();
-
-        if (Array.isArray(data)) {
-          setProductores(data);
-        }
-
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-
-    };
-
-    cargarProductores();
-
-  }, []);
+}, []);
 
   // Validación
   const validar = () => {
@@ -81,61 +84,60 @@ function Productores() {
 
   const limpiarDatos = (obj) => {
 
-    return Object.fromEntries(
-      Object.entries(obj).map(([k, v]) => [k, v === "" ? null : v])
-    );
-
+  return {
+    rfc: obj.rfc,
+    nombre: obj.nombre,
+    apellido: obj.apellido,
+    telefono: obj.telefono,
+    genero: obj.genero,
+    comunidad: obj.comunidad,
+    localidad: obj.localidad,
+    estado: obj.estado,
+    tipoSocio: obj.tipoSocio,
+    activo: obj.activo,
+    fechaIngreso: obj.fechaIngreso
   };
+
+};
 
   // Guardar productor
   const handleGuardar = async () => {
 
-    if (!validar()) return;
+  if (!validar()) return;
 
-    const data = limpiarDatos(formProductor);
+  const data = limpiarDatos(formProductor);
 
-    const url = editarId
-      ? `http://localhost:8080/productores/${editarId}`
-      : "http://localhost:8080/productores";
+  const url = editarId
+    ? `http://localhost:8080/productores/${editarId}`
+    : "http://localhost:8080/productores";
 
-    const method = editarId ? "PUT" : "POST";
+  const method = editarId ? "PUT" : "POST";
 
-    try {
+  try {
 
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
 
-      if (!res.ok) throw new Error("Error guardando productor");
+    if (!res.ok) throw new Error("Error guardando productor");
 
-      const nuevo = await res.json();
+    // ✅ recargar desde backend
+    await cargarProductores();
 
-      if (editarId) {
+    setShowForm(false);
+    setEditarId(null);
+    setFormProductor(estadoInicial);
+    setErrores({});
 
-        setProductores(prev =>
-          prev.map(p =>
-            p.idProductor === editarId ? nuevo : p
-          )
-        );
+  } catch (err) {
 
-      } else {
+    console.error(err);
 
-        setProductores(prev => [...prev, nuevo]);
+  }
 
-      }
-
-      setShowForm(false);
-      setEditarId(null);
-      setFormProductor(estadoInicial);
-      setErrores({});
-
-    } catch (err) {
-      console.error(err);
-    }
-
-  };
+};
 
   // Eliminar
   const handleEliminar = async (id) => {
@@ -146,11 +148,7 @@ function Productores() {
         method: "DELETE"
       });
 
-      setProductores(prev =>
-        prev.map(p =>
-          p.idProductor === id ? { ...p, activo: false } : p
-        )
-      );
+      await cargarProductores();
 
     } catch (err) {
       console.error(err);
