@@ -92,6 +92,7 @@ export default function TablaProductores({ productores, onEditar, onEliminar }) 
                         <h3>Información del Productor</h3>
 
                         <div className="detalle-grid">
+                          <div><b>Nombre completo:</b> {p.nombre} {p.apellido}</div>
 
                           <div><b>Genero:</b> {p.genero}</div>
                           <div><b>Comunidad:</b> {p.comunidad}</div>
@@ -100,6 +101,8 @@ export default function TablaProductores({ productores, onEditar, onEliminar }) 
                           <div><b>Tipo Socio:</b> {p.tipoSocio}</div>
                           <div><b>Activo:</b> {p.activo ? "Sí" : "No"}</div>
                           <div><b>Fecha Ingreso:</b> {p.fechaIngreso}</div>
+
+                          
 
                         </div>
 

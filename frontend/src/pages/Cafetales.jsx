@@ -10,6 +10,8 @@ function Cafetales() {
   const [editarId, setEditarId] = useState(null);
   const [productores, setProductores] = useState([]);
 
+  
+
   const estadoInicial = {
     idProductor: "",
     numParcela: "",
@@ -28,7 +30,9 @@ function Cafetales() {
 
     const data = await res.json();
 
-    setCafetales(data);
+    setCafetales(
+  data.sort((a, b) => a.idCafetal - b.idCafetal)
+);
 
   } catch (err) {
 
@@ -116,10 +120,10 @@ const limpiarDatos = (obj) => {
 
     if (!res.ok) throw new Error("Error guardando");
 
-    // ✅ IMPORTANTE → volver a cargar desde backend
+    //  IMPORTANTE → volver a cargar desde backend
     await cargarCafetales();
 
-    // ✅ limpiar formulario
+    //  limpiar formulario
     setShowForm(false);
     setEditarId(null);
     setFormCafetal(estadoInicial);
@@ -151,7 +155,7 @@ const limpiarDatos = (obj) => {
   setEditarId(c.idCafetal);
 
   setFormCafetal({
-    idCafetal: c.idCafetal,   // ← IMPORTANTE
+    idCafetal: c.idCafetal,   
     numParcela: c.numParcela,
     ubicacion: c.ubicacion,
     areaTotalHa: c.areaTotalHa,
@@ -190,6 +194,7 @@ const limpiarDatos = (obj) => {
             onClick={() => {
               setShowForm(true);
               setEditarId(null);
+              setFormCafetal(estadoInicial); 
             }}
           >
             Nuevo Cafetal
@@ -230,7 +235,7 @@ const limpiarDatos = (obj) => {
               ×
             </button>
 
-            <h2>Registrar Cafetal</h2>
+            <h2>{editarId ? "Editar Cafetal" : "Registrar Cafetal"}</h2>
 
             <form
             className="form-productor"
@@ -344,7 +349,10 @@ const limpiarDatos = (obj) => {
       <button
       type="button"
       className="btn-clear"
-      onClick={() => setFormCafetal(estadoInicial)}
+      onClick={() => {
+      setFormCafetal(estadoInicial);
+      setEditarId(null); 
+    }}
     >
       Limpiar
     </button>

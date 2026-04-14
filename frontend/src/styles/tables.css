@@ -25,6 +25,7 @@ table {
   border-spacing: 0;
   border-radius: 8px;
   overflow: hidden;
+  
 }
 
 thead {
@@ -53,7 +54,35 @@ tbody tr:hover {
   background: #edf4ec !important; /*Hober efecto de las columnas de la tabla*/
 }
 
+
+/* 🔥 SOLO COLUMNA ACCIONES */
 th:last-child,
 td:last-child {
   text-align: center;
+  min-width: 240px;   /* más espacio */
+  
+}
+
+/* 🔥 BOTONES */
+.actions {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: nowrap;   /* NO permitir salto */
+}
+
+/* 🔥 BOTONES NO SE CORTAN */
+.actions button {
+  white-space: nowrap;
+  flex-shrink: 0;   /* 🔥 CLAVE → evita que se encojan */
+}
+
+/* 🔥 LIMITAR COLUMNAS DE TEXTO */
+td:nth-child(3),  /* Nombre */
+td:nth-child(4) { /* Apellido */
+
+  max-width: 140px;       /* ajusta si quieres */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
