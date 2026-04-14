@@ -1,10 +1,10 @@
 /* ===== HEADER ===== */
 
 .header {
-  background: #FAF8F5; /*Fondo superior */
+  background: transparent; /*Fondo superior */
   padding: 25px 40px;
   /*border-bottom: 1px solid red;*/
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  
 }
 
 .header h1 {

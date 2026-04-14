@@ -37,6 +37,11 @@
   position: relative;
 }
 
+.modal h2 {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+}
+
 .modal-close {
 
   position: absolute;
@@ -190,16 +195,7 @@
   z-index:1000;
 }
 
-.modal{
-  position:relative;
-  background:white;
-  padding:30px;
-  border-radius:12px;
-  width:500px;
-  max-width:90%;
-  box-shadow:0 20px 40px rgba(0,0,0,0.2);
-  animation:modalOpen .25s ease;
-}
+
 
 .modal-close{
   position:absolute;

@@ -9,6 +9,7 @@ function Productores() {
   const [loading, setLoading] = useState(true);
   const [editarId, setEditarId] = useState(null);
   const [errores, setErrores] = useState({});
+  const [verInactivos, setVerInactivos] = useState(false);
   
 
   const estadoInicial = {
@@ -33,6 +34,10 @@ function Productores() {
     (p.apellido || "").toLowerCase().includes(busqueda.toLowerCase()) ||
     (p.rfc || "").toLowerCase().includes(busqueda.toLowerCase())
   ) || [];
+  const activos = productoresFiltrados.filter(p => p.activo);
+  const inactivos = productoresFiltrados.filter(p => !p.activo);
+
+  const lista = verInactivos ? inactivos : activos;
 
 
   const cargarProductores = async () => {
@@ -43,7 +48,9 @@ function Productores() {
 
     const data = await res.json();
 
-    setProductores(data);
+    setProductores(
+    data.sort((a, b) => a.idProductor - b.idProductor)
+  );
 
   } catch (err) {
 
@@ -123,7 +130,7 @@ function Productores() {
 
     if (!res.ok) throw new Error("Error guardando productor");
 
-    // ✅ recargar desde backend
+    // recargar desde backend
     await cargarProductores();
 
     setShowForm(false);
@@ -182,10 +189,18 @@ function Productores() {
             />
 
             <button
+            className={`btn-toggle ${verInactivos ? "btn-inactivos" : "btn-activos"}`}
+            onClick={() => setVerInactivos(!verInactivos)}
+          >
+            {verInactivos ? "Ver Activos" : "Ver Inactivos"}
+          </button>
+
+            <button
               className="btn-primary"
               onClick={() => {
                 setShowForm(true);
                 setEditarId(null);
+                setFormProductor(estadoInicial);
               }}
             >
               Nuevo Productor
@@ -200,7 +215,7 @@ function Productores() {
       ) : (
 
         <TablaProductores
-          productores={productoresFiltrados}
+          productores={lista}
           onEditar={handleEditar}
           onEliminar={handleEliminar}
         />
@@ -221,7 +236,7 @@ function Productores() {
       ×
     </button>
 
-    <h2>Registrar Productor</h2>
+    <h2>{editarId ? "Editar Productor" : "Registrar Productor"}</h2>
 
             <form
               className="form-productor"
@@ -292,6 +307,7 @@ function Productores() {
                   className="btn-clear"
                   onClick={() => {
                     setFormProductor(estadoInicial);
+                    setEditarId(null); 
                     setErrores({});
                   }}
                 >
