@@ -86,7 +86,8 @@ public ResponseEntity<Void> eliminar(@PathVariable Long id) {
     }
 
     Productor productor = optional.get();
-    productor.setActivo(false);
+    //productor.setActivo(false);
+    productor.setActivo(!productor.getActivo());
     repository.save(productor);
 
     return ResponseEntity.noContent().build();

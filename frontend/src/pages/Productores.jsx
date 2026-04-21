@@ -9,7 +9,8 @@ function Productores() {
   const [loading, setLoading] = useState(true);
   const [editarId, setEditarId] = useState(null);
   const [errores, setErrores] = useState({});
-  const [verInactivos, setVerInactivos] = useState(false);
+  const [filtroEstado, setFiltroEstado] = useState("ACTIVOS");
+  
   
 
   const estadoInicial = {
@@ -28,16 +29,19 @@ function Productores() {
 
   const [formProductor, setFormProductor] = useState(estadoInicial);
 
-  const productoresFiltrados = productores?.filter((p) => 
+ const productoresFiltrados = productores
+  ?.filter(p => {
+  if (filtroEstado === "ACTIVOS") return p.activo;
+  if (filtroEstado === "INACTIVOS") return !p.activo;
+  return true; // TODOS
+})
+
+  ?.filter((p) => 
     (p.idProductor + "").includes(busqueda) ||
     (p.nombre || "").toLowerCase().includes(busqueda.toLowerCase()) ||
     (p.apellido || "").toLowerCase().includes(busqueda.toLowerCase()) ||
     (p.rfc || "").toLowerCase().includes(busqueda.toLowerCase())
   ) || [];
-  const activos = productoresFiltrados.filter(p => p.activo);
-  const inactivos = productoresFiltrados.filter(p => !p.activo);
-
-  const lista = verInactivos ? inactivos : activos;
 
 
   const cargarProductores = async () => {
@@ -188,13 +192,39 @@ function Productores() {
               onChange={(e) => setBusqueda(e.target.value)}
             />
 
-            <button
-            className={`btn-toggle ${verInactivos ? "btn-inactivos" : "btn-activos"}`}
-            onClick={() => setVerInactivos(!verInactivos)}
-          >
-            {verInactivos ? "Ver Activos" : "Ver Inactivos"}
-          </button>
+            <div className={`filtro-estado estado-${filtroEstado}`}>
 
+  <label>
+    <input
+      type="radio"
+      value="ACTIVOS"
+      checked={filtroEstado === "ACTIVOS"}
+      onChange={(e) => setFiltroEstado(e.target.value)}
+    />
+    <span>Activos</span>
+  </label>
+
+  <label>
+    <input
+      type="radio"
+      value="INACTIVOS"
+      checked={filtroEstado === "INACTIVOS"}
+      onChange={(e) => setFiltroEstado(e.target.value)}
+    />
+    <span>Inactivos</span>
+  </label>
+
+  <label>
+    <input
+      type="radio"
+      value="TODOS"
+      checked={filtroEstado === "TODOS"}
+      onChange={(e) => setFiltroEstado(e.target.value)}
+    />
+    <span>Todos</span>
+  </label>
+
+</div>
             <button
               className="btn-primary"
               onClick={() => {
@@ -215,7 +245,7 @@ function Productores() {
       ) : (
 
         <TablaProductores
-          productores={lista}
+          productores={productoresFiltrados}
           onEditar={handleEditar}
           onEliminar={handleEliminar}
         />

@@ -70,4 +70,12 @@ public Cafetal update(@PathVariable Long id,
         repository.save(c);
     }
 
+    @PutMapping("/reactivar/{id}")
+    public Cafetal reactivar(@PathVariable Long id) {
+        Cafetal c = repository.findById(id).orElseThrow();
+        c.setActivo(true);
+        return repository.save(c);
+    }
+
 }
+

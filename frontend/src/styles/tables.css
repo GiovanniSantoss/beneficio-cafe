@@ -55,7 +55,7 @@ tbody tr:hover {
 }
 
 
-/* 🔥 SOLO COLUMNA ACCIONES */
+
 th:last-child,
 td:last-child {
   text-align: center;
@@ -63,7 +63,7 @@ td:last-child {
   
 }
 
-/* 🔥 BOTONES */
+/* BOTONES */
 .actions {
   display: flex;
   gap: 6px;
@@ -71,18 +71,25 @@ td:last-child {
   flex-wrap: nowrap;   /* NO permitir salto */
 }
 
-/* 🔥 BOTONES NO SE CORTAN */
-.actions button {
-  white-space: nowrap;
-  flex-shrink: 0;   /* 🔥 CLAVE → evita que se encojan */
+.btn-delete,
+.btn-reactivar {
+  width: 100px;
+  text-align: center;
 }
 
-/* 🔥 LIMITAR COLUMNAS DE TEXTO */
+
+.actions button {
+  white-space: nowrap;
+  flex-shrink: 0;   
+}
+
+
 td:nth-child(3),  /* Nombre */
 td:nth-child(4) { /* Apellido */
 
-  max-width: 140px;       /* ajusta si quieres */
+  max-width: 140px;       
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+

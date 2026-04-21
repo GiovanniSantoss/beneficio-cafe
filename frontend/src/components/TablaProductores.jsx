@@ -62,11 +62,11 @@ export default function TablaProductores({ productores, onEditar, onEliminar }) 
                   </button>
 
                   <button
-                    className="btn-delete"
-                    onClick={() => onEliminar(p.idProductor)}
-                  >
-                    Eliminar
-                  </button>
+                  className={p.activo ? "btn-delete" : "btn-reactivar"}
+                  onClick={() => onEliminar(p.idProductor)}
+                >
+                  {p.activo ? "Eliminar" : "Reactivar"}
+                </button>
 
                   <button
                     className="btn-details"
