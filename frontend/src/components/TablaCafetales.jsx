@@ -60,11 +60,11 @@ export default function TablaCafetales({ cafetales, onEditar, onEliminar }) {
                   </button>
 
                   <button
-                    className="btn-delete"
-                    onClick={() => onEliminar(c.idCafetal)}
-                  >
-                    Eliminar
-                  </button>
+                  className={c.activo ? "btn-delete" : "btn-reactivar"}
+                  onClick={() => onEliminar(c.idCafetal, c.activo)}
+                >
+                  {c.activo ? "Eliminar" : "Reactivar"}
+                </button>
 
                   <button
                     className="btn-details"

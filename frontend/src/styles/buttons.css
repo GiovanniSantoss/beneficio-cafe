@@ -19,21 +19,33 @@
 
 
 .btn-edit {
-  background: #3E7039;
+  background: #f59e0b;
   color: white;
   transition: all 0.2s ease;
 }
 
 .btn-edit:hover {
-  background: #2d522a;
+  background: #d97706;
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(62,112,57,0.3);
 }
 
 .btn-delete {
-  background: #8c4b2a;
+  background: #c62828;
   color: white;
   transition: all 0.2s ease;
+}
+
+.btn-reactivar {
+  background: #3E7039;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.btn-reactivar:hover {
+  background: #2d522a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(62,112,57,0.3);
 }
 
 .btn-delete:hover {
@@ -169,4 +181,93 @@
 
 .btn-toggle:hover {
   transform: scale(1.05);
+}
+
+.filtro-estado {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.filtro-estado label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* ===== RADIO BUTTON PRO ===== */
+
+.filtro-estado {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  background: rgba(229, 231, 235, 0.6);
+  border-radius: 999px;
+  padding: 4px; 
+  width: 300px;
+  height: 44px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.filtro-estado input {
+  display: none;
+}
+
+.filtro-estado label {
+  flex: 1;
+  z-index: 10; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.filtro-estado span {
+  font-size: 14px;
+  color: #444;
+  font-weight: 600;
+}
+
+
+.filtro-estado::before {
+  content: "";
+  position: absolute;
+  width: calc(100% / 3 - 8px); 
+  height: calc(100% - 8px);
+  top: 4px;
+  left: 4px;
+  
+  background: white;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  
+  
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+
+
+.filtro-estado.estado-ACTIVOS::before {
+  transform: translateX(0);
+}
+
+.filtro-estado.estado-INACTIVOS::before {
+  
+  transform: translateX(calc(100% + 8px)); 
+}
+
+.filtro-estado.estado-TODOS::before {
+  
+  transform: translateX(calc(200% + 16px));
+}
+
+
+.filtro-estado::after {
+  display: none;
 }

@@ -9,6 +9,7 @@ function Cafetales() {
   const [loading, setLoading] = useState(true);
   const [editarId, setEditarId] = useState(null);
   const [productores, setProductores] = useState([]);
+  const [filtroEstado, setFiltroEstado] = useState("ACTIVOS");
 
   
 
@@ -46,7 +47,13 @@ function Cafetales() {
 
   const [formCafetal, setFormCafetal] = useState(estadoInicial);
 
-  const cafetalesFiltrados = cafetales?.filter((c) =>
+  const cafetalesFiltrados = cafetales
+  ?.filter(c => {
+    if (filtroEstado === "ACTIVOS") return c.activo;
+    if (filtroEstado === "INACTIVOS") return !c.activo;
+    return true; // TODOS
+  })
+  ?.filter((c) =>
     (c.idCafetal + "").includes(busqueda) ||
     (c.numParcela || "").toLowerCase().includes(busqueda.toLowerCase()) ||
     (c.ubicacion || "").toLowerCase().includes(busqueda.toLowerCase())
@@ -138,13 +145,23 @@ const limpiarDatos = (obj) => {
 
 
 
-  const handleEliminar = async (id) => {
+  const handleEliminar = async (id, activo) => {
 
-  await fetch(`http://localhost:8080/cafetales/${id}`, {
-    method: "DELETE"
-  });
+  try {
 
-  await cargarCafetales();
+    const url = activo
+      ? `http://localhost:8080/cafetales/${id}`
+      : `http://localhost:8080/cafetales/reactivar/${id}`;
+
+    const method = activo ? "DELETE" : "PUT";
+
+    await fetch(url, { method });
+
+    await cargarCafetales();
+
+  } catch (err) {
+    console.error(err);
+  }
 
 };
 
@@ -188,6 +205,40 @@ const limpiarDatos = (obj) => {
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
           />
+
+          <div className={`filtro-estado estado-${filtroEstado}`}>
+
+  <label>
+    <input
+      type="radio"
+      value="ACTIVOS"
+      checked={filtroEstado === "ACTIVOS"}
+      onChange={(e) => setFiltroEstado(e.target.value)}
+    />
+    <span>Activos</span>
+  </label>
+
+  <label>
+    <input
+      type="radio"
+      value="INACTIVOS"
+      checked={filtroEstado === "INACTIVOS"}
+      onChange={(e) => setFiltroEstado(e.target.value)}
+    />
+    <span>Inactivos</span>
+  </label>
+
+  <label>
+    <input
+      type="radio"
+      value="TODOS"
+      checked={filtroEstado === "TODOS"}
+      onChange={(e) => setFiltroEstado(e.target.value)}
+    />
+    <span>Todos</span>
+  </label>
+
+</div>
 
           <button
             className="btn-primary"
@@ -326,22 +377,7 @@ const limpiarDatos = (obj) => {
   />
 
 
-  <div className="form-checkbox">
-
-  <label>Activo</label>
-
-  <input
-    type="checkbox"
-    checked={formCafetal.activo || false}
-    onChange={(e) =>
-      setFormCafetal({
-        ...formCafetal,
-        activo: e.target.checked
-      })
-    }
-  />
-
-</div>
+  
 
 
   <div className="form-actions">
