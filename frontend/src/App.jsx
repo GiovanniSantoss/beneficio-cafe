@@ -11,6 +11,7 @@ import "./styles/forms.css";
 import Productores from "./pages/Productores";
 import Cafetales from "./pages/Cafetales";
 import DashboardLayout from "./layout/DashboardLayout";
+import Recepciones from "./pages/Recepciones";
 
 
 function App() {
@@ -24,6 +25,8 @@ function App() {
       {vista === "productores" && <Productores />}
 
       {vista === "cafetales" && <Cafetales />}
+
+      {vista === "recepciones" && <Recepciones />}
 
     </DashboardLayout>
 

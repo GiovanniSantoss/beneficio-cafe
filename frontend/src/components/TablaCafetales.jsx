@@ -2,7 +2,6 @@ import { useState } from "react";
 import React from "react";
 
 export default function TablaCafetales({ cafetales, onEditar, onEliminar }) {
-
   const [filaAbierta, setFilaAbierta] = useState(null);
 
   const toggleDetalles = (id) => {
@@ -10,11 +9,8 @@ export default function TablaCafetales({ cafetales, onEditar, onEliminar }) {
   };
 
   return (
-
     <div className="table-container">
-
       <table>
-
         <thead>
           <tr>
             <th>ID</th>
@@ -28,13 +24,9 @@ export default function TablaCafetales({ cafetales, onEditar, onEliminar }) {
         </thead>
 
         <tbody>
-
           {cafetales.map((c) => (
-
             <React.Fragment key={c.idCafetal}>
-
               <tr>
-
                 <td>{c.idCafetal}</td>
                 <td>{c.numParcela}</td>
                 <td>{c.ubicacion}</td>
@@ -45,26 +37,24 @@ export default function TablaCafetales({ cafetales, onEditar, onEliminar }) {
                 </td>
 
                 <td>
-                  <span className={c.activo ? "status-activo" : "status-inactivo"}>
+                  <span
+                    className={c.activo ? "status-activo" : "status-inactivo"}
+                  >
                     {c.activo ? "Activo" : "Inactivo"}
                   </span>
                 </td>
 
                 <td className="actions">
-
-                  <button
-                    className="btn-edit"
-                    onClick={() => onEditar(c)}
-                  >
+                  <button className="btn-edit" onClick={() => onEditar(c)}>
                     Editar
                   </button>
 
                   <button
-                  className={c.activo ? "btn-delete" : "btn-reactivar"}
-                  onClick={() => onEliminar(c.idCafetal, c.activo)}
-                >
-                  {c.activo ? "Eliminar" : "Reactivar"}
-                </button>
+                    className={c.activo ? "btn-delete" : "btn-reactivar"}
+                    onClick={() => onEliminar(c.idCafetal, c.activo)}
+                  >
+                    {c.activo ? "Eliminar" : "Reactivar"}
+                  </button>
 
                   <button
                     className="btn-details"
@@ -72,30 +62,32 @@ export default function TablaCafetales({ cafetales, onEditar, onEliminar }) {
                   >
                     {filaAbierta === c.idCafetal ? "Ocultar" : "Ver más"}
                   </button>
-
                 </td>
-
               </tr>
 
               {filaAbierta === c.idCafetal && (
-
                 <tr className="detalle-fila">
-
                   <td colSpan="7">
-
                     <div className="detalle-overlay">
-
                       <div className="detalle-card">
-
                         <h3>Información del Cafetal</h3>
 
                         <div className="detalle-grid">
-
-                          <div><b>Parcela:</b> {c.numParcela}</div>
-                          <div><b>Ubicación:</b> {c.ubicacion}</div>
-                          <div><b>Área:</b> {c.areaTotalHa}</div>
-                          <div><b>Latitud:</b> {c.latitud}</div>
-                          <div><b>Longitud:</b> {c.longitud}</div>
+                          <div>
+                            <b>Parcela:</b> {c.numParcela}
+                          </div>
+                          <div>
+                            <b>Ubicación:</b> {c.ubicacion}
+                          </div>
+                          <div>
+                            <b>Área:</b> {c.areaTotalHa}
+                          </div>
+                          <div>
+                            <b>Latitud:</b> {c.latitud}
+                          </div>
+                          <div>
+                            <b>Longitud:</b> {c.longitud}
+                          </div>
 
                           <div>
                             <b>Productor:</b>
@@ -105,7 +97,6 @@ export default function TablaCafetales({ cafetales, onEditar, onEliminar }) {
                           <div>
                             <b>Activo:</b> {c.activo ? "Sí" : "No"}
                           </div>
-
                         </div>
 
                         <button
@@ -114,27 +105,15 @@ export default function TablaCafetales({ cafetales, onEditar, onEliminar }) {
                         >
                           Cerrar
                         </button>
-
                       </div>
-
                     </div>
-
                   </td>
-
                 </tr>
-
               )}
-
             </React.Fragment>
-
           ))}
-
         </tbody>
-
       </table>
-
     </div>
-
   );
-
 }
