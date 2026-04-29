@@ -29,7 +29,12 @@ export default function Sidebar({ setVista, vista }) {
           Cafetales
         </li>
 
-        <li>Recepción</li>
+        <li
+        className={vista === "recepciones" ? "active" : ""}
+        onClick={() => setVista("recepciones")}
+      >
+        Recepción
+      </li>
         <li>Procesos</li>
         <li>Inventario</li>
         <li>Ventas</li>
