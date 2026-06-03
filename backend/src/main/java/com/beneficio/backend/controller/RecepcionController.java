@@ -1,5 +1,6 @@
 package com.beneficio.backend.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,14 +75,12 @@ public class RecepcionController {
             throw new RuntimeException("El usuario es obligatorio");
         }
 
-        if (recepcion.getPesoInicial() == null) {
-            throw new RuntimeException("El peso inicial es obligatorio");
+        if (recepcion.getPesoInicial() == null 
+            || recepcion.getPesoInicial().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("El peso inicial debe ser mayor a 0");
         }
 
-        if (recepcion.getPesoFinal() != null
-                && recepcion.getPesoFinal().compareTo(recepcion.getPesoInicial()) > 0) {
-            throw new RuntimeException("El peso final no puede ser mayor al inicial");
-        }
+        
 
         // ===== TRAER DATOS REALES DE BD =====
         Productor productorBD = productorRepository.findById(
@@ -119,10 +118,10 @@ public class RecepcionController {
         nueva.setUsuario(usuarioBD);
         nueva.setEmpleado(empleadoBD);
         nueva.setPesoInicial(recepcion.getPesoInicial());
-        nueva.setPesoFinal(recepcion.getPesoFinal());
         nueva.setObservaciones(recepcion.getObservaciones());
         nueva.setFechaHora(java.time.LocalDateTime.now());
         nueva.setActivo(true);
+        nueva.setEstado("PENDIENTE");
 
         // ===== GUARDAR =====
         Recepcion guardada = recepcionRepository.save(nueva);
@@ -131,7 +130,8 @@ public class RecepcionController {
         Lote lote = new Lote();
         lote.setRecepcion(guardada);
         lote.setEstadoCafe("CEREZA");
-        lote.setPesoActual(guardada.getPesoFinal());
+        lote.setEstado("PENDIENTE");
+        lote.setPesoActual(guardada.getPesoInicial());
         lote.setActivo(true);
 
         loteRepository.save(lote);
@@ -145,21 +145,45 @@ public class RecepcionController {
         recepcionRepository.deleteById(id);
     }
 
-    @PutMapping("/{id}")
-    public Recepcion actualizar(@PathVariable Long id, @RequestBody Recepcion datos) {
+   @PutMapping("/{id}")
+public Recepcion actualizar(@PathVariable Long id, @RequestBody Recepcion datos) {
 
-        Recepcion recepcion = recepcionRepository.findById(id)
+    Recepcion recepcion = recepcionRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Recepción no encontrada"));
+
+    if ("CANCELADA".equals(recepcion.getEstado())) {
+        throw new RuntimeException("No puedes modificar una recepción cancelada");
+    }
+
+    if (datos.getObservaciones() != null) {
+        recepcion.setObservaciones(datos.getObservaciones());
+    }
+
+    return recepcionRepository.save(recepcion);
+}
+
+    @PutMapping("/{id}/cancelar")
+    public Recepcion cancelar(@PathVariable Long id) {
+
+        Recepcion r = recepcionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Recepción no encontrada"));
 
-        if (datos.getPesoFinal() != null) {
-            recepcion.setPesoFinal(datos.getPesoFinal());
+        r.setEstado("CANCELADA");
+        r.setActivo(false);
+
+
+        Lote lote = loteRepository.findAll().stream()
+                .filter(l -> l.getRecepcion().getIdRecepcion().equals(id))
+                .findFirst()
+                .orElse(null);
+
+        if (lote != null) {
+            lote.setActivo(false);
+            loteRepository.save(lote);
         }
 
-        if (datos.getObservaciones() != null) {
-            recepcion.setObservaciones(datos.getObservaciones());
-        }
-
-        return recepcionRepository.save(recepcion);
+        return recepcionRepository.save(r);
     }
+    
 
 }

@@ -307,3 +307,51 @@
   height: 16px;
   cursor: pointer;
 }
+
+.modal form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.modal form input,
+.modal form select,
+.modal form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.modal form input:focus,
+.modal form select:focus,
+.modal form textarea:focus {
+  border-color: #b8743c;
+  box-shadow: 0 0 0 2px rgba(184,116,60,0.2);
+}
+
+/* ===== FORZAR COLORES EN FORM RECEPCION ===== */
+
+.modal form input,
+.modal form select,
+.modal form textarea {
+  background: white !important;
+  color: #333 !important;
+  border: 1px solid #ccc !important;
+}
+
+.modal form input:focus,
+.modal form select:focus,
+.modal form textarea:focus {
+  border-color: #6f4e37 !important;
+  box-shadow: 0 0 0 2px rgba(111,78,55,0.25) !important;
+}
+
+
+/* ===== CENTRAR BOTON DETALLE ===== */
+
+.btn-cerrar-detalle {
+  display: block;
+  margin: 20px auto 0 auto; /* 👈 esto lo centra */
+}

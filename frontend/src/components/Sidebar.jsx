@@ -35,7 +35,12 @@ export default function Sidebar({ setVista, vista }) {
       >
         Recepción
       </li>
-        <li>Procesos</li>
+        <li
+        className={vista === "procesos" ? "active" : ""}
+        onClick={() => setVista("procesos")}
+      >
+        Procesos
+      </li>
         <li>Inventario</li>
         <li>Ventas</li>
         <li>Reportes</li>

@@ -28,6 +28,9 @@ public class Lote {
     @Column(name = "estado_cafe")
     private String estadoCafe;
 
+    @Column(name = "estado")
+    private String estado;
+
     @Column(name = "peso_actual")
     private BigDecimal pesoActual;
 
@@ -38,7 +41,6 @@ public class Lote {
     private Boolean activo;
 
     // ===== GETTERS Y SETTERS =====
-
     public Long getIdLote() {
         return idLote;
     }
@@ -61,6 +63,14 @@ public class Lote {
 
     public void setEstadoCafe(String estadoCafe) {
         this.estadoCafe = estadoCafe;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public BigDecimal getPesoActual() {

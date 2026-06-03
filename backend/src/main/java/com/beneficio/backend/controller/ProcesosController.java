@@ -16,6 +16,7 @@ import com.beneficio.backend.model.Lote;
 import com.beneficio.backend.model.Procesos;
 import com.beneficio.backend.repository.LoteRepository;
 import com.beneficio.backend.repository.ProcesosRepository;
+
 @RestController
 @RequestMapping("/procesos")
 @CrossOrigin("*")
@@ -38,49 +39,60 @@ public class ProcesosController {
     }
 
     @PostMapping
-public Procesos create(@RequestBody Procesos proceso) {
+    public Procesos create(@RequestBody Procesos proceso) {
 
-    // VALIDAR LOTE
-    if (proceso.getLote() == null || proceso.getLote().getIdLote() == null) {
-        throw new RuntimeException("El lote es obligatorio");
+        // VALIDAR LOTE
+        if (proceso.getLote() == null || proceso.getLote().getIdLote() == null) {
+            throw new RuntimeException("El lote es obligatorio");
+        }
+
+        // Obtener lote real
+        Lote lote = loteRepository.findById(proceso.getLote().getIdLote())
+                .orElseThrow(() -> new RuntimeException("Lote no encontrado"));
+
+        // VALIDAR PESO NULL
+        if (proceso.getPesoResultante() == null) {
+            throw new RuntimeException("El peso resultante es obligatorio");
+        }
+
+        // VALIDAR PESO > 0
+        if (proceso.getPesoResultante().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("El peso debe ser mayor a 0");
+        }
+
+        // VALIDAR QUE NO AUMENTE
+        if (proceso.getPesoResultante().compareTo(lote.getPesoActual()) > 0) {
+            throw new RuntimeException("El peso no puede ser mayor al actual del lote");
+        }
+
+        // VALIDAR LOTE ACTIVO
+        if (!lote.getActivo()) {
+            throw new RuntimeException("El lote está inactivo");
+        }
+
+        // Asignar lote validado
+        proceso.setLote(lote);
+
+        // Guardar proceso
+        Procesos nuevo = procesosRepository.save(proceso);
+
+        // Actualizar peso
+        lote.setPesoActual(proceso.getPesoResultante());
+
+        // Avanzar etapa
+        if ("CEREZA".equals(lote.getEstadoCafe())) {
+            lote.setEstadoCafe("PERGAMINO");
+        } else if ("PERGAMINO".equals(lote.getEstadoCafe())) {
+            lote.setEstadoCafe("ORO");
+
+            // Cuando llega a ORO queda procesado
+            lote.setEstado("PROCESADO");
+        }
+
+        loteRepository.save(lote);
+
+        return nuevo;
     }
-
-    // Obtener lote real
-    Lote lote = loteRepository.findById(proceso.getLote().getIdLote())
-            .orElseThrow(() -> new RuntimeException("Lote no encontrado"));
-
-    // VALIDAR PESO NULL
-    if (proceso.getPesoResultante() == null) {
-        throw new RuntimeException("El peso resultante es obligatorio");
-    }
-
-    // VALIDAR PESO > 0
-    if (proceso.getPesoResultante().compareTo(java.math.BigDecimal.ZERO) <= 0) {
-        throw new RuntimeException("El peso debe ser mayor a 0");
-    }
-
-    // VALIDAR QUE NO AUMENTE
-    if (proceso.getPesoResultante().compareTo(lote.getPesoActual()) > 0) {
-        throw new RuntimeException("El peso no puede ser mayor al actual del lote");
-    }
-
-    // VALIDAR LOTE ACTIVO
-    if (!lote.getActivo()) {
-        throw new RuntimeException("El lote está inactivo");
-    }
-
-    // Asignar lote validado
-    proceso.setLote(lote);
-
-    // Guardar proceso
-    Procesos nuevo = procesosRepository.save(proceso);
-
-    // Actualizar peso del lote
-    lote.setPesoActual(proceso.getPesoResultante());
-    loteRepository.save(lote);
-
-    return nuevo;
-}
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
