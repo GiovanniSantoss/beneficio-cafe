@@ -93,3 +93,62 @@ td:nth-child(4) { /* Apellido */
   white-space: nowrap;
 }
 
+
+.estado {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* 🟡 PENDIENTE (igual estilo suave) */
+.estado.pendiente {
+  background: #fff8e1;
+  color: #f57c00;
+}
+
+/* 🟢 COMPLETA (igual a status-activo) */
+.estado.completa {
+  background: #e6f4ea;
+  color: #2e7d32;
+}
+
+/* 🔴 CANCELADA (igual a status-inactivo) */
+.estado.cancelada {
+  background: #fdecea;
+  color: #c62828;
+}
+
+.estado.completa,
+.estado.procesado {
+  background: #e6f4ea;
+  color: #2e7d32;
+}
+
+
+/* ===== SCROLLBAR PERSONALIZADO ===== */
+
+.table-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #6f4e37, #a67c52); /* tonos café */
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #8b5e3c, #c49a6c);
+}
+
+/* Firefox */
+.table-container {
+  scrollbar-width: thin;
+  scrollbar-color: #a67c52 rgba(0, 0, 0, 0.05);
+}

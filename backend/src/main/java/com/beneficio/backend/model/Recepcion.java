@@ -40,8 +40,7 @@ public class Recepcion {
     @Column(name = "peso_inicial")
     private BigDecimal pesoInicial;
 
-    @Column(name = "peso_final")
-    private BigDecimal pesoFinal;
+    
 
     @Column(name = "fecha_hora")
     private LocalDateTime fechaHora;
@@ -52,9 +51,10 @@ public class Recepcion {
     @Column(name = "activo")
     private Boolean activo;
 
+    @Column(name = "estado")
+    private String estado = "PENDIENTE";
 
     // ===== GETTERS Y SETTERS =====
-
     public Long getIdRecepcion() {
         return idRecepcion;
     }
@@ -103,13 +103,7 @@ public class Recepcion {
         this.pesoInicial = pesoInicial;
     }
 
-    public BigDecimal getPesoFinal() {
-        return pesoFinal;
-    }
-
-    public void setPesoFinal(BigDecimal pesoFinal) {
-        this.pesoFinal = pesoFinal;
-    }
+    
 
     public LocalDateTime getFechaHora() {
         return fechaHora;
@@ -133,5 +127,13 @@ public class Recepcion {
 
     public void setActivo(Boolean activo) {
         this.activo = activo;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }

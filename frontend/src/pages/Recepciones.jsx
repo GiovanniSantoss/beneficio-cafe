@@ -8,23 +8,22 @@ function Recepciones() {
   const [empleados, setEmpleados] = useState([]);
 
   const [showForm, setShowForm] = useState(false);
-  const [showFinalizar, setShowFinalizar] = useState(false);
+  //const [showFinalizar, setShowFinalizar] = useState(false);
 
-  const [recepcionSeleccionada, setRecepcionSeleccionada] = useState(null);
+  //const [recepcionSeleccionada, setRecepcionSeleccionada] = useState(null);
 
-  const [pesoFinalEdit, setPesoFinalEdit] = useState("");
-  const [obsEdit, setObsEdit] = useState("");
+  //const [pesoFinalEdit, setPesoFinalEdit] = useState("");
+  //const [obsEdit, setObsEdit] = useState("");
 
   const [loading, setLoading] = useState(true);
 
   const estadoInicial = {
-    productor: { idProductor: "" },
-    cafetal: { idCafetal: "" },
-    empleado: { idEmpleado: "" },
-    pesoInicial: "",
-    pesoFinal: "",
-    observaciones: "",
-  };
+  productor: { idProductor: "" },
+  cafetal: { idCafetal: "" },
+  empleado: { idEmpleado: "" },
+  pesoInicial: "",
+  observaciones: "",
+};
 
   const [form, setForm] = useState(estadoInicial);
 
@@ -60,7 +59,7 @@ function Recepciones() {
         setRecepciones(r);
         setProductores(p.filter((x) => x.activo));
         setCafetales(c.filter((x) => x.activo));
-        setEmpleados(e.filter((x) => x.activo)); 
+        setEmpleados(e.filter((x) => x.activo));
 
         setLoading(false);
       } catch (error) {
@@ -88,16 +87,13 @@ function Recepciones() {
     }
 
     const body = {
-      productor: { idProductor: Number(form.productor.idProductor) },
-      cafetal: { idCafetal: Number(form.cafetal.idCafetal) },
-      usuario: { idUsuario: 1 },
-      empleado: form.empleado.idEmpleado
-        ? { idEmpleado: Number(form.empleado.idEmpleado) }
-        : null,
-      pesoInicial: Number(form.pesoInicial),
-      pesoFinal: form.pesoFinal ? Number(form.pesoFinal) : null,
-      observaciones: form.observaciones,
-    };
+    productor: { idProductor: Number(form.productor.idProductor) },
+    cafetal: { idCafetal: Number(form.cafetal.idCafetal) },
+    usuario: { idUsuario: 1 },
+    empleado: { idEmpleado: Number(form.empleado.idEmpleado) },
+    pesoInicial: Number(form.pesoInicial),
+    observaciones: form.observaciones,
+  };
 
     await fetch("http://localhost:8080/recepciones", {
       method: "POST",
@@ -111,28 +107,16 @@ function Recepciones() {
   };
 
   //  ABRIR FINALIZAR
-  const handleFinalizar = (r) => {
-    setRecepcionSeleccionada(r);
-    setPesoFinalEdit("");
-    setObsEdit("");
-    setShowFinalizar(true);
-  };
+  
 
   //  GUARDAR FINALIZACIÓN
-  const guardarFinalizacion = async () => {
-    await fetch(
-      `http://localhost:8080/recepciones/${recepcionSeleccionada.idRecepcion}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pesoFinal: Number(pesoFinalEdit),
-          observaciones: obsEdit,
-        }),
-      },
-    );
+  
 
-    setShowFinalizar(false);
+  const cancelarRecepcion = async (id) => {
+    await fetch(`http://localhost:8080/recepciones/${id}/cancelar`, {
+      method: "PUT",
+    });
+
     await cargarTodo();
   };
 
@@ -151,7 +135,7 @@ function Recepciones() {
       ) : (
         <TablaRecepciones
           recepciones={recepciones}
-          onFinalizar={handleFinalizar}
+          onCancelar={cancelarRecepcion}
         />
       )}
 
@@ -162,6 +146,7 @@ function Recepciones() {
             <h2>Nueva Recepción</h2>
 
             <form
+              className="form-recepcion"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleGuardar();
@@ -228,14 +213,7 @@ function Recepciones() {
                 }
               />
 
-              <input
-                type="number"
-                placeholder="Peso final (opcional)"
-                value={form.pesoFinal}
-                onChange={(e) =>
-                  setForm({ ...form, pesoFinal: e.target.value })
-                }
-              />
+              
 
               <textarea
                 placeholder="Observaciones"
@@ -249,7 +227,11 @@ function Recepciones() {
                 <button type="submit" className="btn-primary">
                   Guardar
                 </button>
-                <button type="button" onClick={() => setShowForm(false)}>
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={() => setShowForm(false)}
+                >
                   Cancelar
                 </button>
               </div>
@@ -258,35 +240,7 @@ function Recepciones() {
         </div>
       )}
 
-      {/*  MODAL FINALIZAR */}
-      {showFinalizar && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Finalizar Recepción</h2>
-
-            <input
-              type="number"
-              placeholder="Peso final"
-              value={pesoFinalEdit}
-              onChange={(e) => setPesoFinalEdit(e.target.value)}
-            />
-
-            <textarea
-              placeholder="Observaciones"
-              value={obsEdit}
-              onChange={(e) => setObsEdit(e.target.value)}
-            />
-
-            <div className="form-actions">
-              <button onClick={guardarFinalizacion} className="btn-primary">
-                Guardar
-              </button>
-
-              <button onClick={() => setShowFinalizar(false)}>Cancelar</button>
-            </div>
-          </div>
-        </div>
-      )}
+      
     </div>
   );
 }

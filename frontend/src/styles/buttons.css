@@ -271,3 +271,14 @@
 .filtro-estado::after {
   display: none;
 }
+
+/* ===== SOLO RECEPCION: NORMALIZAR BTN VER MAS ===== */
+
+.actions-recepcion .btn-details {
+  height: 40px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
