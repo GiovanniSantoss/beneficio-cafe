@@ -19,11 +19,35 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
   margin-bottom: 20px;
+
+  /* ===== BARRA FIJA =====
+     Permanece visible en la parte superior del área de contenido
+     mientras la tabla/contenido se desplaza por debajo. */
+  position: sticky;
+  top: 0;
+  /* Debe superar el z-index: 10 de .table-container thead th, si no las
+     sugerencias del buscador quedan detrás del encabezado de la tabla. */
+  z-index: 20;
+
+  /* Mismo fondo que el body (base.css): al quedarse fija debe ser opaco
+     para ocultar el contenido que pasa por debajo, pero sin cambiar la
+     apariencia visual (idéntico al fondo decorativo existente).
+     "fixed" alinea la imagen al viewport, igual que el fondo del body. */
+  background:
+    linear-gradient(rgba(250,248,245,0.9), rgba(250,248,245,0.9)),
+    url('../assets/images/Gemini_Generated_Image_eb8kwmeb8kwmeb8k.png') fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .header-actions {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
 }
 
@@ -44,4 +68,16 @@
 
 .btn-primary:hover {
   background-color: #45a049;
+}
+
+/* ===== BUSCADOR CON SUGERENCIAS DE PRODUCTORES =====
+   Contenedor del input en la barra de Recepciones. La lista desplegable
+   reutiliza .combo-productor-lista de forms.css. */
+.buscador-productores {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.buscador-productores .combo-productor-lista {
+  z-index: 30;
 }

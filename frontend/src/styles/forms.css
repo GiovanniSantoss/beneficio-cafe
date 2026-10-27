@@ -355,3 +355,88 @@
   display: block;
   margin: 20px auto 0 auto; /* 👈 esto lo centra */
 }
+
+/* =====================================================
+   COMBO CON BÚSQUEDA DE PRODUCTORES
+   (ProductorComboBox.jsx)
+===================================================== */
+
+.combo-productor {
+  position: relative;
+  width: 100%;
+}
+
+.combo-productor-input {
+  position: relative;
+}
+
+/* Mayor especificidad para ganarle a ".modal form input" */
+.modal form .combo-productor-input input {
+  padding-right: 34px;
+  cursor: text;
+}
+
+.combo-productor-clear {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+
+  border: none;
+  background: transparent;
+  color: #6f4e37;
+
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 4px;
+
+  cursor: pointer;
+}
+
+.combo-productor-lista {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+
+  max-height: 220px;
+  overflow-y: auto;
+
+  margin: 0;
+  padding: 4px 0;
+
+  list-style: none;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.combo-productor-lista li {
+  padding: 9px 12px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+}
+
+.combo-productor-lista li.resaltado {
+  background: #f3e9e1;
+}
+
+.combo-productor-lista li[aria-selected="true"] {
+  color: #6f4e37;
+  font-weight: 600;
+}
+
+.combo-productor-vacio {
+  color: #888;
+  font-style: italic;
+  cursor: default;
+}
+
+.combo-mark {
+  background: transparent;
+  color: #b8743c;
+  font-weight: 700;
+}

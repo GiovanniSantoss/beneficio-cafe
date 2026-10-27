@@ -52,7 +52,7 @@ export default function TablaProcesos({ lotes, onProcesar }) {
                   </span>
                 </td>
 
-                <td className="actions">
+                <td className="actions actions-procesos">
                   {etapaCafe !== "ORO" && (
                     <button
                       className="btn-primary"

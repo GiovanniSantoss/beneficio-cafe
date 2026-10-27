@@ -1,0 +1,214 @@
+/* =====================================================
+   Modal Registrar / Editar Cafetal  (Cafetales.jsx)
+   Tarjeta "Ver más" del cafetal     (TablaCafetales.jsx)
+   Estilos EXCLUSIVOS del módulo de cafetales.
+   No toca los compartidos de forms.css / buttons.css.
+===================================================== */
+
+/* ===== Modal de tamaño FIJO (no crece por notificaciones ni errores) ===== */
+.modal.modal-cafetal {
+  width: 760px;
+  max-width: 95vw;
+  height: 780px;
+  max-height: 92vh;
+  padding: 24px 28px;
+  box-sizing: border-box;
+  overflow: hidden; /* el scroll vive dentro del formulario, no en el modal */
+  display: flex;
+  flex-direction: column;
+  position: relative; /* ancla del toast flotante */
+}
+
+/* Título con acento café */
+.modal.modal-cafetal h2 {
+  color: #5c381e;
+  flex: 0 0 auto;
+}
+
+/* El formulario ocupa el alto restante y reparte el espacio con el grid */
+.modal form.form-cafetal {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr; /* pisa el "1fr 1fr" de .modal form */
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 16px;
+}
+
+/* ===== Banda de campos 2×2 ===== */
+.form-cafetal-campos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+}
+
+/* ===== Bloque del mapa: ocupa su fila y llena el alto disponible ===== */
+.form-cafetal-mapa {
+  min-width: 0;
+  min-height: 0; /* permite que el hijo flex se encoja sin desbordar */
+  display: flex;
+}
+
+.form-cafetal-mapa > * {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* El mapa vive dentro del modal: no debe tapar los controles del modal */
+.form-cafetal-mapa .leaflet-container {
+  z-index: 0;
+}
+
+/* ===== Coordenadas bajo el mapa ===== */
+.form-cafetal-mapa p {
+  color: #6b7280;
+}
+
+/* ===== Footer jerarquizado: [Limpiar] … [Cancelar] [Guardar] ===== */
+/* Solo se define la disposición y el tamaño; los COLORES se heredan
+   de buttons.css (btn-clear verde / btn-cancel rojo / btn-primary café). */
+.form-cafetal-footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.form-cafetal-footer button {
+  flex: 0 0 auto;
+  height: 42px;
+  padding: 0 22px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Terciario: Limpiar a la izquierda */
+.form-cafetal-footer .btn-clear {
+  margin-right: auto;
+}
+
+/* =====================================================
+   Sileo (notificaciones interactivas)
+   Ajuste de color para alinear con la paleta café/verde.
+   Sileo renderiza en un portal flotante: no ocupa espacio,
+   por lo que el mapa NUNCA se redimensiona al salir un aviso.
+===================================================== */
+:root {
+  --sileo-state-success: oklch(0.55 0.13 150); /* verde del proyecto (#3E7039) */
+  --sileo-state-error: oklch(0.52 0.19 27); /* rojo del proyecto (#a61515) */
+  --sileo-width: 340px;
+}
+
+/* Sileo usa z-index:50 por defecto y el overlay del modal usa 1000,
+   así que el toast quedaba detrás. Se sube por encima del modal.
+   (Selector propio de Sileo: no afecta a ningún otro componente.) */
+[data-sileo-viewport] {
+  z-index: 2000 !important;
+}
+
+/* Móvil */
+@media (max-width: 800px) {
+  .modal.modal-cafetal {
+    height: auto;
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+
+  .form-cafetal-campos {
+    grid-template-columns: 1fr;
+  }
+
+  .form-cafetal-mapa {
+    min-height: 320px;
+  }
+}
+
+/* =====================================================
+   Tarjeta "Ver más" del cafetal (TablaCafetales)
+   Datos a la izquierda, mapa a la derecha.
+   Clases propias (detalle-cafetal-*) para NO tocar los
+   estilos compartidos de forms.css (Productores/Procesos).
+===================================================== */
+
+/* Overlay propio: la tarjeta siempre centrada y con aire,
+   nunca se corta por arriba aunque tenga mapa alto. */
+.detalle-cafetal-overlay {
+  padding: 24px;
+  align-items: center;
+}
+
+/* Tarjeta del cafetal: más ancha, alto acotado y 3 zonas
+   (título fijo · cuerpo con scroll · botón fijo). */
+.detalle-cafetal-card {
+  width: 820px;
+  max-width: 95vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.detalle-cafetal-card h3 {
+  flex: 0 0 auto;
+  margin-bottom: 4px;
+}
+
+/* Cuerpo: datos (tamaño original 2 col) + mapa, SIN barra de scroll */
+.detalle-cafetal-cuerpo {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+  overflow: hidden; /* sin slide bar */
+}
+
+.detalle-cafetal-cuerpo.sin-mapa {
+  grid-template-columns: 1fr;
+}
+
+/* Campos con el tamaño ORIGINAL (2 columnas, como forms.css) */
+.detalle-cafetal-cuerpo .detalle-grid {
+  margin-top: 0;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-content: start;
+}
+
+/* Mapa: se adapta al hueco disponible, sin mínimo que desborde */
+.detalle-cafetal-mapa {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+}
+
+.detalle-cafetal-mapa > * {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.detalle-cafetal-mapa .leaflet-container {
+  z-index: 0;
+}
+
+/* Botón Cerrar siempre visible, centrado abajo */
+.detalle-cafetal-card .btn-cerrar-detalle {
+  flex: 0 0 auto;
+  align-self: center;
+}
+
+@media (max-width: 800px) {
+  .detalle-cafetal-cuerpo {
+    grid-template-columns: 1fr;
+  }
+
+  .detalle-cafetal-mapa {
+    min-height: 260px;
+  }
+}

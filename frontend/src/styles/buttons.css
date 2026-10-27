@@ -272,6 +272,60 @@
   display: none;
 }
 
+/* ===== RECEPCION: FILTRO PÍLDORA PENDIENTE / COMPLETA / CANCELADA =====
+   Reglas nuevas para el componente FiltroEstado.jsx (solo Recepción).
+   No afecta a Productores/Cafetales, que usan estado-ACTIVOS/INACTIVOS/TODOS. */
+
+.filtro-estado.estado-PENDIENTE::before {
+  transform: translateX(0);
+}
+
+.filtro-estado.estado-COMPLETA::before {
+  transform: translateX(calc(100% + 8px));
+}
+
+.filtro-estado.estado-CANCELADA::before {
+  transform: translateX(calc(200% + 16px));
+}
+
+/* ===== PROCESOS: FILTRO PÍLDORA PENDIENTE / PROCESADO / TODOS =====
+   La primera posición (PENDIENTE) y la tercera (TODOS) reutilizan las reglas
+   existentes; aquí solo se define la posición central. */
+
+.filtro-estado.estado-PROCESADO::before {
+  transform: translateX(calc(100% + 8px));
+}
+
+/* ===== RECEPCION: GRUPO [📅 fecha] [🔍 texto] =====
+   Clases nuevas usadas solo por Recepciones.jsx. Dos controles independientes
+   separados por un pequeño gap, con el mismo estilo de borde/radio/foco del
+   sistema. No se modifica ninguna regla existente de .search-input. */
+
+.search-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;                         /* separación entre calendario y buscador */
+}
+
+.date-input,
+.select-filtro {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #333;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.date-input:focus,
+.select-filtro:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
 /* ===== SOLO RECEPCION: NORMALIZAR BTN VER MAS ===== */
 
 .actions-recepcion .btn-details {
@@ -280,5 +334,24 @@
   border-radius: 8px;
   font-weight: 600;
   font-size: 14px;
+}
+
+/* ===== SOLO PROCESOS: IGUALAR "VER MAS" A "PROCESAR" =====
+   En Procesos la celda de acciones solo tiene un boton, por lo que el flex
+   no lo estira como en Productores/Cafetales. Esta regla replica las medidas
+   de .btn-primary (12px 20px, 16px) sin tocar el .btn-details global ni los
+   botones de los demas modulos. */
+
+.actions-procesos .btn-details {
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Solo Procesos: mismo ancho para "Procesar" y "Ver mas". */
+.actions-procesos .btn-primary,
+.actions-procesos .btn-details {
+  width: 98px;
 }
 

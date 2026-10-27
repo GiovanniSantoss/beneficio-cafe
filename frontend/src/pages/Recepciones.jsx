@@ -1,11 +1,21 @@
 import { useEffect, useState } from "react";
 import TablaRecepciones from "../components/TablaRecepciones";
+import FiltroEstado from "../components/FiltroEstado";
+import ProductorComboBox from "../components/ProductorComboBox";
+import BuscadorProductores from "../components/BuscadorProductores";
+import { normalizar } from "../utils/texto";
 
 function Recepciones() {
   const [recepciones, setRecepciones] = useState([]);
   const [productores, setProductores] = useState([]);
   const [cafetales, setCafetales] = useState([]);
   const [empleados, setEmpleados] = useState([]);
+
+  const [busqueda, setBusqueda] = useState("");
+  // Productor elegido desde las sugerencias: filtra exacto por id
+  const [productorFiltro, setProductorFiltro] = useState(null);
+  const [fecha, setFecha] = useState(""); // "YYYY-MM-DD" o "" = sin filtro
+  const [filtroEstado, setFiltroEstado] = useState("PENDIENTE");
 
   const [showForm, setShowForm] = useState(false);
   //const [showFinalizar, setShowFinalizar] = useState(false);
@@ -79,6 +89,38 @@ function Recepciones() {
     (c) => c.productor?.idProductor === Number(form.productor.idProductor),
   );
 
+  //  FILTRO DE LA TABLA: píldora (estado) + búsqueda de texto + fecha exacta
+  const recepcionesFiltradas =
+    recepciones
+      ?.filter((r) => r.estado === filtroEstado)
+      ?.filter((r) => {
+        // Si se eligió una sugerencia, filtrar exactamente por ese productor
+        if (productorFiltro) {
+          return r.productor?.idProductor === productorFiltro.idProductor;
+        }
+
+        const q = normalizar(busqueda).trim();
+
+        return (
+          (r.idRecepcion + "").includes(busqueda) ||
+          normalizar(
+            `${r.productor?.nombre ?? ""} ${r.productor?.apellido ?? ""}`,
+          ).includes(q) ||
+          normalizar(r.cafetal?.numParcela).includes(q) ||
+          normalizar(r.cafetal?.ubicacion).includes(q) ||
+          normalizar(
+            `${r.empleado?.nombre ?? ""} ${r.empleado?.apellido ?? ""}`,
+          ).includes(q)
+        );
+      })
+      ?.filter((r) => {
+        if (!fecha) return true;
+        // Comparar solo el día en horario local (ignora hora/minuto)
+        const d = new Date(r.fechaHora);
+        const local = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        return local === fecha;
+      }) || [];
+
   //  GUARDAR RECEPCIÓN
   const handleGuardar = async () => {
     if (!form.empleado.idEmpleado) {
@@ -125,16 +167,51 @@ function Recepciones() {
       <div className="header-productores">
         <h2>Recepciones</h2>
 
-        <button className="btn-primary" onClick={() => setShowForm(true)}>
-          Nueva Recepción
-        </button>
+        <div className="header-actions">
+          <div className="search-group">
+            <input
+              type="date"
+              className="date-input"
+              value={fecha}
+              onChange={(e) => setFecha(e.target.value)}
+            />
+
+            <BuscadorProductores
+              productores={productores}
+              value={busqueda}
+              onChange={(texto) => {
+                setBusqueda(texto);
+                setProductorFiltro(null);
+              }}
+              onSelect={(p) => {
+                setBusqueda(`${p.nombre} ${p.apellido}`.trim());
+                setProductorFiltro(p);
+              }}
+              placeholder="Buscar recepción..."
+            />
+          </div>
+
+          <FiltroEstado
+            valor={filtroEstado}
+            onChange={setFiltroEstado}
+            opciones={[
+              { valor: "PENDIENTE", etiqueta: "Pendientes" },
+              { valor: "COMPLETA", etiqueta: "Completas" },
+              { valor: "CANCELADA", etiqueta: "Canceladas" },
+            ]}
+          />
+
+          <button className="btn-primary" onClick={() => setShowForm(true)}>
+            Nueva Recepción
+          </button>
+        </div>
       </div>
 
       {loading ? (
         <p>Cargando...</p>
       ) : (
         <TablaRecepciones
-          recepciones={recepciones}
+          recepciones={recepcionesFiltradas}
           onCancelar={cancelarRecepcion}
         />
       )}
@@ -152,23 +229,19 @@ function Recepciones() {
                 handleGuardar();
               }}
             >
-              <select
+              <ProductorComboBox
+                productores={productores}
                 value={form.productor.idProductor}
-                onChange={(e) =>
+                onChange={(idProductor) =>
                   setForm({
                     ...form,
-                    productor: { idProductor: e.target.value },
+                    productor: { idProductor },
                     cafetal: { idCafetal: "" },
                   })
                 }
-              >
-                <option value="">Selecciona productor</option>
-                {productores.map((p) => (
-                  <option key={p.idProductor} value={p.idProductor}>
-                    {p.nombre} {p.apellido}
-                  </option>
-                ))}
-              </select>
+                placeholder="Selecciona productor"
+                id="recepcion-productor"
+              />
 
               <select
                 value={form.cafetal.idCafetal}

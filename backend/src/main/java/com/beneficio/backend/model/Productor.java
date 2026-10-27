@@ -14,16 +14,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 
 @Entity
 @Table(name = "productor")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Productor {
 
     @Id
@@ -79,6 +73,113 @@ public class Productor {
 
     @Column(nullable = false)
     private Boolean activo;
+
+    public Productor() {
+    }
+
+    public Long getIdProductor() {
+        return idProductor;
+    }
+
+    public void setIdProductor(Long idProductor) {
+        this.idProductor = idProductor;
+    }
+
+    public String getRfc() {
+        return rfc;
+    }
+
+    public void setRfc(String rfc) {
+        this.rfc = rfc;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public LocalDate getFechaIngreso() {
+        return fechaIngreso;
+    }
+
+    public void setFechaIngreso(LocalDate fechaIngreso) {
+        this.fechaIngreso = fechaIngreso;
+    }
+
+    public String getGenero() {
+        return genero;
+    }
+
+    public void setGenero(String genero) {
+        this.genero = genero;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getComunidad() {
+        return comunidad;
+    }
+
+    public void setComunidad(String comunidad) {
+        this.comunidad = comunidad;
+    }
+
+    public String getLocalidad() {
+        return localidad;
+    }
+
+    public void setLocalidad(String localidad) {
+        this.localidad = localidad;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getTipoSocio() {
+        return tipoSocio;
+    }
+
+    public void setTipoSocio(String tipoSocio) {
+        this.tipoSocio = tipoSocio;
+    }
+
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
 
     @PrePersist
     public void prePersist() {
