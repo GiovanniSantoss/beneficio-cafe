@@ -1,0 +1,32 @@
+spring.application.name=backend
+
+# Base de datos - los valores se leen de variables de entorno
+# Definir antes de arrancar:
+#   PowerShell:  $env:DB_PASSWORD = "tu-clave"
+#   Linux/macOS: export DB_PASSWORD="tu-clave"
+spring.datasource.url=${DB_URL:jdbc:postgresql://localhost:5432/beneficio_cafe}
+spring.datasource.username=${DB_USER:postgres}
+spring.datasource.password=${DB_PASSWORD}
+
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+# Mostrar errores reales
+server.error.include-message=always
+server.error.include-binding-errors=always
+
+# Logging detallado
+logging.level.org.springframework.web=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type.descriptor.sql=TRACE
+logging.level.org.springframework.orm.jpa=DEBUG
+logging.level.root=INFO
+
+# Mostrar excepciones que Spring resuelve internamente
+logging.level.org.springframework.web.servlet.DispatcherServlet=DEBUG
+logging.level.org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver=DEBUG
+
+# Hibernate errores
+logging.level.org.hibernate.engine.jdbc.spi.SqlExceptionHelper=ERROR
+logging.level.org.springframework.dao=DEBUG
