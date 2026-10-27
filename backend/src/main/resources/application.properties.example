@@ -1,15 +1,16 @@
 spring.application.name=backend
-spring.datasource.url=jdbc:postgresql://localhost:5432/beneficio_cafe
-spring.datasource.username=postgres
-spring.datasource.password=PIZZA
+
+# Base de datos - los valores se leen de variables de entorno
+# Definir antes de arrancar:
+#   PowerShell:  $env:DB_PASSWORD = "tu-clave"
+#   Linux/macOS: export DB_PASSWORD="tu-clave"
+spring.datasource.url=${DB_URL:jdbc:postgresql://localhost:5432/beneficio_cafe}
+spring.datasource.username=${DB_USER:postgres}
+spring.datasource.password=${DB_PASSWORD}
 
 spring.jpa.hibernate.ddl-auto=validate
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-
-spring.security.user.name=admin
-spring.security.user.password=admin
-
 
 # Mostrar errores reales
 server.error.include-message=always
