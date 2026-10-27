@@ -1,13 +1,9 @@
 export default function Sidebar({ setVista, vista }) {
-
   return (
-
     <div className="sidebar">
-
       <h2 className="logo">☕ Beneficio</h2>
 
       <ul>
-
         <li
           className={vista === "inicio" ? "active" : ""}
           onClick={() => setVista("inicio")}
@@ -30,25 +26,40 @@ export default function Sidebar({ setVista, vista }) {
         </li>
 
         <li
-        className={vista === "recepciones" ? "active" : ""}
-        onClick={() => setVista("recepciones")}
-      >
-        Recepción
-      </li>
+          className={vista === "recepciones" ? "active" : ""}
+          onClick={() => setVista("recepciones")}
+        >
+          Recepción
+        </li>
+
         <li
-        className={vista === "procesos" ? "active" : ""}
-        onClick={() => setVista("procesos")}
-      >
-        Procesos
-      </li>
-        <li>Inventario</li>
-        <li>Ventas</li>
-        <li>Reportes</li>
+          className={vista === "procesos" ? "active" : ""}
+          onClick={() => setVista("procesos")}
+        >
+          Procesos
+        </li>
 
+        <li
+          className={vista === "inventario" ? "active" : ""}
+          onClick={() => setVista("inventario")}
+        >
+          Inventario
+        </li>
+
+        <li
+          className={vista === "ventas" ? "active" : ""}
+          onClick={() => setVista("ventas")}
+        >
+          Ventas
+        </li>
+
+        <li
+          className={vista === "reportes" ? "active" : ""}
+          onClick={() => setVista("reportes")}
+        >
+          Reportes
+        </li>
       </ul>
-
     </div>
-
   );
-
 }

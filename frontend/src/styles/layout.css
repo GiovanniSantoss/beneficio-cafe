@@ -3,6 +3,8 @@
 .dashboard {
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
+  /* Fila fija: el contenido nunca agranda el layout, evita desbordes del documento */
+  grid-template-rows: 100%;
   height: 100vh;
   width: 100%;
 }
@@ -12,15 +14,20 @@
   flex-direction: column;
   flex: 1;
   min-width: 0;
-  overflow-y: auto;
+  min-height: 0;
+  /* No scrollea: el encabezado superior permanece siempre visible */
+  overflow: hidden;
   background: transparent;
 }
 
 .content {
   padding: 30px;
   flex: 1;
+  min-height: 0;
   width: 100%;
   max-width: 100%;
+  /* Único contenedor que scrollea: el contenido se desplaza bajo el encabezado */
+  overflow-y: auto;
 }
 
 /* ===== RESPONSIVE ===== */

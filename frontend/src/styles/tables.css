@@ -3,11 +3,14 @@
 .table-container {
   background: white;
   border-radius: 12px;
-  padding: 25px;
+  /* Sin padding-top: ese aire superior (25px) pasa a formar parte del
+     encabezado fijo (ver .table-container thead th) para que la separacion
+     sobre los titulos se mantenga al hacer scroll. */
+  padding: 0 25px 25px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.06);
   margin-top: 10px;
 
-  max-height: 400px;   /* altura máxima */
+  max-height: 450px;   /* altura máxima */
   overflow-y: auto;    /* scroll vertical */
 }
 
@@ -24,8 +27,10 @@ table {
   border-collapse: separate;
   border-spacing: 0;
   border-radius: 8px;
-  overflow: hidden;
-  
+  /* "clip" en lugar de "hidden": recorta exactamente igual, pero NO crea un
+     contenedor de scroll propio. Con "hidden" el sticky de thead th quedaba
+     anulado (la tabla era su propio scrollport y no se desplaza). */
+  overflow: clip;
 }
 
 thead {
@@ -39,6 +44,22 @@ th {
   color: #555;
   font-size: 14px;
   text-transform: uppercase;
+}
+
+/* ===== ENCABEZADOS DE COLUMNA FIJOS ===== */
+/* Se mantienen visibles mientras se desplazan las filas dentro de
+   .table-container (contenedor con scroll). Requiere que <table> no use
+   overflow: hidden (ver regla table).
+   La franja blanca superior (border-top de 25px) es la separacion que
+   antes daba el padding-top del contenedor: al formar parte del propio
+   encabezado, se queda fija con el y no se desplaza con las filas. */
+.table-container thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10; /* por encima de las filas del tbody */
+  border-top: 25px solid #ffffff; /* separacion blanca, ahora dentro del encabezado */
+  background: #f2efe8; /* fondo sólido: mismo color actual del encabezado */
+  background-clip: padding-box; /* el beige no invade la franja blanca */
 }
 
 td {
@@ -152,3 +173,7 @@ td:nth-child(4) { /* Apellido */
   scrollbar-width: thin;
   scrollbar-color: #a67c52 rgba(0, 0, 0, 0.05);
 }
+
+
+
+

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import React from "react";
+import MapaCafetal from "./MapaCafetal";
 
 export default function TablaCafetales({ cafetales, onEditar, onEliminar }) {
   const [filaAbierta, setFilaAbierta] = useState(null);
@@ -68,45 +69,69 @@ export default function TablaCafetales({ cafetales, onEditar, onEliminar }) {
               {filaAbierta === c.idCafetal && (
                 <tr className="detalle-fila">
                   <td colSpan="7">
-                    <div className="detalle-overlay">
-                      <div className="detalle-card">
-                        <h3>Información del Cafetal</h3>
+                    {(() => {
+                      const hayMapa = c.latitud != null || c.poligono != null;
 
-                        <div className="detalle-grid">
-                          <div>
-                            <b>Parcela:</b> {c.numParcela}
-                          </div>
-                          <div>
-                            <b>Ubicación:</b> {c.ubicacion}
-                          </div>
-                          <div>
-                            <b>Área:</b> {c.areaTotalHa}
-                          </div>
-                          <div>
-                            <b>Latitud:</b> {c.latitud}
-                          </div>
-                          <div>
-                            <b>Longitud:</b> {c.longitud}
-                          </div>
+                      return (
+                        <div className="detalle-overlay detalle-cafetal-overlay">
+                          <div className="detalle-card detalle-cafetal-card">
+                            <h3>Información del Cafetal</h3>
 
-                          <div>
-                            <b>Productor:</b>
-                            {c.productor?.nombre} {c.productor?.apellido}
-                          </div>
+                            <div
+                              className={
+                                hayMapa
+                                  ? "detalle-cafetal-cuerpo con-mapa"
+                                  : "detalle-cafetal-cuerpo sin-mapa"
+                              }
+                            >
+                              <div className="detalle-grid">
+                                <div>
+                                  <b>Parcela:</b> {c.numParcela}
+                                </div>
+                                <div>
+                                  <b>Ubicación:</b> {c.ubicacion}
+                                </div>
+                                <div>
+                                  <b>Área:</b> {c.areaTotalHa} ha
+                                </div>
+                                <div>
+                                  <b>Latitud:</b> {c.latitud}
+                                </div>
+                                <div>
+                                  <b>Longitud:</b> {c.longitud}
+                                </div>
 
-                          <div>
-                            <b>Activo:</b> {c.activo ? "Sí" : "No"}
+                                <div>
+                                  <b>Productor:</b> {c.productor?.nombre}{" "}
+                                  {c.productor?.apellido}
+                                </div>
+
+                                <div>
+                                  <b>Activo:</b> {c.activo ? "Sí" : "No"}
+                                </div>
+                              </div>
+
+                              {hayMapa && (
+                                <div className="detalle-cafetal-mapa">
+                                  <MapaCafetal
+                                    value={c}
+                                    readOnly
+                                    height="100%"
+                                  />
+                                </div>
+                              )}
+                            </div>
+
+                            <button
+                              className="btn-cerrar-detalle"
+                              onClick={() => setFilaAbierta(null)}
+                            >
+                              Cerrar
+                            </button>
                           </div>
                         </div>
-
-                        <button
-                          className="btn-cerrar-detalle"
-                          onClick={() => setFilaAbierta(null)}
-                        >
-                          Cerrar
-                        </button>
-                      </div>
-                    </div>
+                      );
+                    })()}
                   </td>
                 </tr>
               )}

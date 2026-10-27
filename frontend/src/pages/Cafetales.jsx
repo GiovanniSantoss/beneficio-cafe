@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import { sileo } from "sileo";
 import TablaCafetales from "../components/TablaCafetales";
-
+import MapaCafetal from "../components/MapaCafetal";
+import ProductorComboBox from "../components/ProductorComboBox";
+import "../styles/Cafetales.css";
 function Cafetales() {
   const [cafetales, setCafetales] = useState([]);
   const [busqueda, setBusqueda] = useState("");
@@ -9,14 +12,16 @@ function Cafetales() {
   const [editarId, setEditarId] = useState(null);
   const [productores, setProductores] = useState([]);
   const [filtroEstado, setFiltroEstado] = useState("ACTIVOS");
+  const [mapKey, setMapKey] = useState(0); // fuerza reiniciar el mapa (botón Limpiar)
 
   const estadoInicial = {
     idProductor: "",
     numParcela: "",
     ubicacion: "",
     areaTotalHa: "",
-    latitud: "",
-    longitud: "",
+    latitud: null,
+    longitud: null,
+    poligono: null,
     activo: true,
   };
 
@@ -36,12 +41,16 @@ function Cafetales() {
 
   const [formCafetal, setFormCafetal] = useState(estadoInicial);
 
+  // El mapa envía solo los campos que cambian (lat, lng, polígono, área)
+  const actualizarGeo = (parcial) =>
+    setFormCafetal((prev) => ({ ...prev, ...parcial }));
+
   const cafetalesFiltrados =
     cafetales
       ?.filter((c) => {
         if (filtroEstado === "ACTIVOS") return c.activo;
         if (filtroEstado === "INACTIVOS") return !c.activo;
-        return true; 
+        return true;
       })
       ?.filter(
         (c) =>
@@ -50,18 +59,38 @@ function Cafetales() {
           (c.ubicacion || "").toLowerCase().includes(busqueda.toLowerCase()),
       ) || [];
 
+  // Productores activos para el combo. Si se edita un cafetal cuyo productor
+  // quedó inactivo, se conserva en la lista para poder mostrarlo.
+  const productoresDisponibles = productores.filter(
+    (p) => p.activo || String(p.idProductor) === String(formCafetal.idProductor),
+  );
+
+  // Carga inicial. Los setState van dentro de callbacks (then/finally), que es lo que
+  // permite la regla react-hooks/set-state-in-effect. cargarCafetales() se sigue usando
+  // en los handlers (guardar, eliminar), donde sí es válido.
   useEffect(() => {
-    cargarCafetales();
+    let cancelado = false;
 
-    const cargarProductores = async () => {
-      const res = await fetch("http://localhost:8080/productores");
+    fetch("http://localhost:8080/cafetales")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelado) setCafetales(data.sort((a, b) => a.idCafetal - b.idCafetal));
+      })
+      .catch((err) => console.error(err))
+      .finally(() => {
+        if (!cancelado) setLoading(false);
+      });
 
-      const data = await res.json();
+    fetch("http://localhost:8080/productores")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelado) setProductores(data);
+      })
+      .catch((err) => console.error(err));
 
-      setProductores(data);
+    return () => {
+      cancelado = true;
     };
-
-    cargarProductores();
   }, []);
 
   const limpiarDatos = (obj) => {
@@ -72,8 +101,10 @@ function Cafetales() {
       ubicacion: obj.ubicacion || null,
       areaTotalHa: obj.areaTotalHa || null,
 
-      latitud: obj.latitud || null,
-      longitud: obj.longitud || null,
+      // ?? en lugar de || para no perder coordenadas válidas con valor 0
+      latitud: obj.latitud ?? null,
+      longitud: obj.longitud ?? null,
+      poligono: obj.poligono ?? null,
 
       activo: obj.activo ?? true,
 
@@ -83,10 +114,8 @@ function Cafetales() {
     };
   };
 
-  const handleGuardar = async () => {
+  const guardarCafetal = async () => {
     const data = limpiarDatos(formCafetal);
-
-    console.log("DATA A ENVIAR:", data);
 
     const url = editarId
       ? `http://localhost:8080/cafetales/${editarId}`
@@ -94,43 +123,82 @@ function Cafetales() {
 
     const method = editarId ? "PUT" : "POST";
 
-    try {
-      const res = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+    const res = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
-      if (!res.ok) throw new Error("Error guardando");
-
-      
-      await cargarCafetales();
-
-      //  limpiar formulario
-      setShowForm(false);
-      setEditarId(null);
-      setFormCafetal(estadoInicial);
-    } catch (err) {
-      console.error(err);
+    if (!res.ok) {
+      let detalle = "";
+      try {
+        const body = await res.json();
+        detalle = body.message || body.error || "";
+      } catch {
+        /* respuesta sin JSON */
+      }
+      throw new Error(`El servidor respondió ${res.status}. ${detalle}`);
     }
+
+    await cargarCafetales();
+
+    setShowForm(false);
+    setEditarId(null);
+    setFormCafetal(estadoInicial);
   };
 
-  const handleEliminar = async (id, activo) => {
-    try {
+  const handleGuardar = () => {
+    sileo.promise(guardarCafetal(), {
+      loading: { title: "Guardando cafetal…" },
+      success: { title: "Cafetal guardado correctamente" },
+      position: "top-center",
+      error: (err) => ({
+        title: "No se pudo guardar",
+        description: err?.message || "Intenta de nuevo.",
+        position: "top-center",
+      }),
+    });
+  };
+
+  const handleEliminar = (id, activo) => {
+    const ejecutar = async () => {
       const url = activo
         ? `http://localhost:8080/cafetales/${id}`
         : `http://localhost:8080/cafetales/reactivar/${id}`;
 
       const method = activo ? "DELETE" : "PUT";
 
-      await fetch(url, { method });
+      const res = await fetch(url, { method });
+
+      if (!res.ok) throw new Error(`El servidor respondió ${res.status}.`);
 
       await cargarCafetales();
-    } catch (err) {
-      console.error(err);
-    }
+    };
+
+    const idToast = sileo.show({
+      title: activo ? "Eliminando cafetal…" : "Reactivando cafetal…",
+      duration: null,
+      position: "top-center",
+    });
+
+    ejecutar()
+      .then(() => {
+        sileo.dismiss(idToast);
+        (activo ? sileo.error : sileo.success)({
+          title: activo ? "Cafetal desactivado" : "Cafetal reactivado",
+          position: "top-center",
+        });
+      })
+      .catch((err) => {
+        sileo.dismiss(idToast);
+        sileo.error({
+          title: activo ? "No se pudo desactivar" : "No se pudo reactivar",
+          description: err?.message || "Intenta de nuevo.",
+          position: "top-center",
+        });
+      });
   };
 
   const handleEditar = (c) => {
@@ -141,8 +209,9 @@ function Cafetales() {
       numParcela: c.numParcela,
       ubicacion: c.ubicacion,
       areaTotalHa: c.areaTotalHa,
-      latitud: c.latitud,
-      longitud: c.longitud,
+      latitud: c.latitud ?? null,
+      longitud: c.longitud ?? null,
+      poligono: c.poligono ?? null,
       activo: c.activo,
 
       idProductor: c.productor?.idProductor || "",
@@ -222,7 +291,7 @@ function Cafetales() {
 
       {showForm && (
         <div className="modal-overlay">
-          <div className="modal">
+          <div className="modal modal-cafetal">
             <button className="modal-close" onClick={() => setShowForm(false)}>
               ×
             </button>
@@ -230,108 +299,96 @@ function Cafetales() {
             <h2>{editarId ? "Editar Cafetal" : "Registrar Cafetal"}</h2>
 
             <form
-              className="form-productor"
+              className="form-cafetal"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleGuardar();
               }}
             >
-              {/* PRODUCTOR */}
-              <select
-                value={formCafetal.idProductor || ""}
-                onChange={(e) =>
-                  setFormCafetal({
-                    ...formCafetal,
-                    idProductor: e.target.value,
-                  })
-                }
-              >
-                <option value="">Seleccione productor</option>
+              <div className="form-cafetal-campos">
+                {/* PRODUCTOR */}
+                <ProductorComboBox
+                  productores={productoresDisponibles}
+                  value={formCafetal.idProductor}
+                  onChange={(idProductor) =>
+                    setFormCafetal({
+                      ...formCafetal,
+                      idProductor,
+                    })
+                  }
+                  placeholder="Seleccione productor"
+                  id="cafetal-productor"
+                />
 
-                {productores.map((p) => (
-                  <option key={p.idProductor} value={p.idProductor}>
-                    {p.nombre} {p.apellido}
-                  </option>
-                ))}
-              </select>
+                <input
+                  placeholder="Número parcela"
+                  value={formCafetal.numParcela || ""}
+                  onChange={(e) =>
+                    setFormCafetal({
+                      ...formCafetal,
+                      numParcela: e.target.value,
+                    })
+                  }
+                />
 
-              <input
-                placeholder="Número parcela"
-                value={formCafetal.numParcela || ""}
-                onChange={(e) =>
-                  setFormCafetal({
-                    ...formCafetal,
-                    numParcela: e.target.value,
-                  })
-                }
-              />
+                <input
+                  placeholder="Ubicación"
+                  value={formCafetal.ubicacion || ""}
+                  onChange={(e) =>
+                    setFormCafetal({
+                      ...formCafetal,
+                      ubicacion: e.target.value,
+                    })
+                  }
+                />
 
-              <input
-                placeholder="Ubicación"
-                value={formCafetal.ubicacion || ""}
-                onChange={(e) =>
-                  setFormCafetal({
-                    ...formCafetal,
-                    ubicacion: e.target.value,
-                  })
-                }
-              />
+                <input
+                  placeholder="Área total (ha)"
+                  value={formCafetal.areaTotalHa || ""}
+                  onChange={(e) =>
+                    setFormCafetal({
+                      ...formCafetal,
+                      areaTotalHa: e.target.value,
+                    })
+                  }
+                />
+              </div>
 
-              <input
-                placeholder="Área total (ha)"
-                value={formCafetal.areaTotalHa || ""}
-                onChange={(e) =>
-                  setFormCafetal({
-                    ...formCafetal,
-                    areaTotalHa: e.target.value,
-                  })
-                }
-              />
+              {/* MAPA: reemplaza los campos manuales de latitud y longitud */}
+              <div className="form-cafetal-mapa">
+                <MapaCafetal
+                  key={mapKey}
+                  value={formCafetal}
+                  onChange={actualizarGeo}
+                  height="100%"
+                />
+              </div>
 
-              <input
-                placeholder="Latitud"
-                value={formCafetal.latitud || ""}
-                onChange={(e) =>
-                  setFormCafetal({
-                    ...formCafetal,
-                    latitud: e.target.value,
-                  })
-                }
-              />
-
-              <input
-                placeholder="Longitud"
-                value={formCafetal.longitud || ""}
-                onChange={(e) =>
-                  setFormCafetal({
-                    ...formCafetal,
-                    longitud: e.target.value,
-                  })
-                }
-              />
-
-              <div className="form-actions">
+              <div className="form-cafetal-footer">
                 <button
                   type="button"
                   className="btn-clear"
                   onClick={() => {
                     setFormCafetal(estadoInicial);
                     setEditarId(null);
+                    setMapKey((k) => k + 1);
                   }}
                 >
                   Limpiar
                 </button>
 
-                <button className="btn-primary" type="submit">
-                  Guardar
-                </button>
-
                 <button
                   type="button"
                   className="btn-cancel"
-                  onClick={() => setShowForm(false)}
+                  onClick={() => {
+                    setShowForm(false);
+                  }}
                 >
                   Cancelar
+                </button>
+
+                <button className="btn-primary" type="submit">
+                  Guardar
                 </button>
               </div>
             </form>

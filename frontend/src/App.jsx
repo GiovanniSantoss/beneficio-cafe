@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Toaster } from "sileo";
 
 import "./styles/base.css";
 import "./styles/layout.css";
@@ -21,17 +22,25 @@ function App() {
 
   return (
 
-    <DashboardLayout vista={vista} setVista={setVista}>
+    <>
 
-      {vista === "productores" && <Productores />}
+      <DashboardLayout vista={vista} setVista={setVista}>
 
-      {vista === "cafetales" && <Cafetales />}
+        {vista === "productores" && <Productores />}
 
-      {vista === "recepciones" && <Recepciones />}
+        {vista === "cafetales" && <Cafetales />}
 
-      {vista === "procesos" && <Procesos />}
+        {vista === "recepciones" && <Recepciones />}
 
-    </DashboardLayout>
+        {vista === "procesos" && <Procesos />}
+
+      </DashboardLayout>
+
+      {/* Notificaciones interactivas fuera del layout: flotan sobre los modales.
+          Sileo las renderiza en un portal propio; no ocupan espacio en el layout. */}
+      <Toaster position="bottom-center" theme="light" />
+
+    </>
 
   );
 

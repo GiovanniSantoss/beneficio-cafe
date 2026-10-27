@@ -1,6 +1,10 @@
 package com.beneficio.backend.model;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,6 +39,11 @@ public class Cafetal {
     private Double latitud;
 
     private Double longitud;
+
+    // GeoJSON geometry: {"type":"Polygon","coordinates":[[[lng,lat],...]]}
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "poligono", columnDefinition = "jsonb")
+    private Map<String, Object> poligono;
 
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
@@ -100,6 +109,14 @@ public class Cafetal {
 
     public void setLongitud(Double longitud) {
         this.longitud = longitud;
+    }
+
+    public Map<String, Object> getPoligono() {
+        return poligono;
+    }
+
+    public void setPoligono(Map<String, Object> poligono) {
+        this.poligono = poligono;
     }
 
     public LocalDateTime getFechaCreacion() {

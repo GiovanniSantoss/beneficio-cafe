@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { sileo } from "sileo";
 import TablaProductores from "../components/TablaProductores";
 
 function Productores() {
@@ -94,9 +95,7 @@ function Productores() {
   };
 
   // Guardar productor
-  const handleGuardar = async () => {
-    if (!validar()) return;
-
+  const guardarProductor = async () => {
     const data = limpiarDatos(formProductor);
 
     const url = editarId
@@ -105,38 +104,84 @@ function Productores() {
 
     const method = editarId ? "PUT" : "POST";
 
-    try {
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
 
-      if (!res.ok) throw new Error("Error guardando productor");
-
-      // recargar desde backend
-      await cargarProductores();
-
-      setShowForm(false);
-      setEditarId(null);
-      setFormProductor(estadoInicial);
-      setErrores({});
-    } catch (err) {
-      console.error(err);
+    if (!res.ok) {
+      let detalle = "";
+      try {
+        const body = await res.json();
+        detalle = body.message || body.error || "";
+      } catch {
+        /* respuesta sin JSON */
+      }
+      throw new Error(`El servidor respondió ${res.status}. ${detalle}`);
     }
+
+    // recargar desde backend
+    await cargarProductores();
+
+    setShowForm(false);
+    setEditarId(null);
+    setFormProductor(estadoInicial);
+    setErrores({});
   };
 
-  // Eliminar
-  const handleEliminar = async (id) => {
-    try {
-      await fetch(`http://localhost:8080/productores/${id}`, {
+  const handleGuardar = () => {
+    if (!validar()) return;
+
+    sileo.promise(guardarProductor(), {
+      loading: { title: "Guardando productor…" },
+      success: { title: "Productor guardado correctamente" },
+      position: "top-center",
+      error: (err) => ({
+        title: "No se pudo guardar",
+        description: err?.message || "Intenta de nuevo.",
+        position: "top-center",
+      }),
+    });
+  };
+
+  // Eliminar / Reactivar (el DELETE del backend alterna el estado `activo`)
+  const handleEliminar = (id) => {
+    const target = productores.find((p) => p.idProductor === id);
+    const reactivando = target ? !target.activo : false;
+
+    const ejecutar = async () => {
+      const res = await fetch(`http://localhost:8080/productores/${id}`, {
         method: "DELETE",
       });
 
+      if (!res.ok) throw new Error(`El servidor respondió ${res.status}.`);
+
       await cargarProductores();
-    } catch (err) {
-      console.error(err);
-    }
+    };
+
+    const idToast = sileo.show({
+      title: reactivando ? "Reactivando productor…" : "Eliminando productor…",
+      duration: null,
+      position: "top-center",
+    });
+
+    ejecutar()
+      .then(() => {
+        sileo.dismiss(idToast);
+        (reactivando ? sileo.success : sileo.error)({
+          title: reactivando ? "Productor reactivado" : "Productor desactivado",
+          position: "top-center",
+        });
+      })
+      .catch((err) => {
+        sileo.dismiss(idToast);
+        sileo.error({
+          title: reactivando ? "No se pudo reactivar" : "No se pudo desactivar",
+          description: err?.message || "Intenta de nuevo.",
+          position: "top-center",
+        });
+      });
   };
 
   // Editar

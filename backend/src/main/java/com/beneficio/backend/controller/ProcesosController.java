@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.beneficio.backend.model.Lote;
 import com.beneficio.backend.model.Procesos;
+import com.beneficio.backend.model.Recepcion;
 import com.beneficio.backend.repository.LoteRepository;
 import com.beneficio.backend.repository.ProcesosRepository;
+import com.beneficio.backend.repository.RecepcionRepository;
 
 @RestController
 @RequestMapping("/procesos")
@@ -27,6 +29,9 @@ public class ProcesosController {
 
     @Autowired
     private LoteRepository loteRepository;
+
+    @Autowired
+    private RecepcionRepository recepcionRepository;
 
     @GetMapping
     public List<Procesos> getAll() {
@@ -81,14 +86,26 @@ public class ProcesosController {
 
         // Avanzar etapa
         if ("CEREZA".equals(lote.getEstadoCafe())) {
+
             lote.setEstadoCafe("PERGAMINO");
+
         } else if ("PERGAMINO".equals(lote.getEstadoCafe())) {
+
             lote.setEstadoCafe("ORO");
 
-            // Cuando llega a ORO queda procesado
+            // El lote queda procesado
             lote.setEstado("PROCESADO");
+
+            // La recepción correspondiente queda completa
+            Recepcion recepcion = lote.getRecepcion();
+
+            if (recepcion != null) {
+                recepcion.setEstado("COMPLETA");
+                recepcionRepository.save(recepcion);
+            }
         }
 
+        // Guardar cambios del lote
         loteRepository.save(lote);
 
         return nuevo;

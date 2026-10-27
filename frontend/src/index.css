@@ -24,8 +24,8 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  /* Sin flex ni centrado: si algo desborda, el navegador muestra scrollbar
+     en lugar de recortar el título en el borde superior (inalcanzable). */
   min-width: 320px;
   min-height: 100vh;
 }

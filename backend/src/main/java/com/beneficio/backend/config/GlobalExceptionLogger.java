@@ -7,7 +7,7 @@ public class GlobalExceptionLogger {
 
     @ExceptionHandler(Exception.class)
     public String log(Exception e) {
-        e.printStackTrace(); // 👈 AQUÍ SALE TODO
+        e.printStackTrace(); 
         return e.getMessage();
     }
 }
