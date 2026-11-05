@@ -1,22 +1,28 @@
+
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 
-export default function DashboardLayout({ children, setVista, vista }) {
+export default function DashboardLayout({
+  children,
+  setVista,
+  vista,
+  usuario,
+  onLogout
+}) {
 
   return (
-
     <div className="dashboard">
 
-      {/* Sidebar */}
-      <Sidebar setVista={setVista} vista={vista} />
+      <Sidebar
+        setVista={setVista}
+        vista={vista}
+        usuario={usuario}
+      />
 
-      {/* Área principal */}
       <div className="main">
 
-        {/* Header superior */}
-        <Header />
+        <Header usuario={usuario} onLogout={onLogout} />
 
-        {/* Contenido dinámico de las páginas */}
         <main className="content">
           {children}
         </main>
@@ -24,7 +30,6 @@ export default function DashboardLayout({ children, setVista, vista }) {
       </div>
 
     </div>
-
   );
-
 }
+
