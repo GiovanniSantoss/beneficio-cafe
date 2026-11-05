@@ -47,6 +47,17 @@
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 
+		<!--
+			Hibernate 7 usa Jackson 2 (com.fasterxml.jackson) para mapear columnas
+			jsonb (Cafetal.poligono). Spring Boot 4 solo trae Jackson 3
+			(tools.jackson), así que hay que declarar Jackson 2 explícitamente.
+			La versión la administra el BOM de Spring Boot 4.
+		-->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+
 		<dependency>
 		<groupId>org.hibernate.validator</groupId>
 		<artifactId>hibernate-validator</artifactId>

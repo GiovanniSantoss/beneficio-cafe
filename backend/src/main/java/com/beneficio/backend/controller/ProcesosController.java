@@ -3,6 +3,7 @@ package com.beneficio.backend.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import com.beneficio.backend.model.Recepcion;
 import com.beneficio.backend.repository.LoteRepository;
 import com.beneficio.backend.repository.ProcesosRepository;
 import com.beneficio.backend.repository.RecepcionRepository;
+import com.beneficio.backend.service.InventarioService;
 
 @RestController
 @RequestMapping("/procesos")
@@ -33,6 +35,9 @@ public class ProcesosController {
     @Autowired
     private RecepcionRepository recepcionRepository;
 
+    @Autowired
+    private InventarioService inventarioService;
+
     @GetMapping
     public List<Procesos> getAll() {
         return procesosRepository.findAll();
@@ -44,6 +49,7 @@ public class ProcesosController {
     }
 
     @PostMapping
+    @Transactional
     public Procesos create(@RequestBody Procesos proceso) {
 
         // VALIDAR LOTE
@@ -107,6 +113,9 @@ public class ProcesosController {
 
         // Guardar cambios del lote
         loteRepository.save(lote);
+
+        // Sincronizar existencias
+        inventarioService.actualizarStock(lote, proceso.getPesoResultante());
 
         return nuevo;
     }

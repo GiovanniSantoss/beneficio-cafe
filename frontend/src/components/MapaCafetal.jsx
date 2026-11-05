@@ -168,7 +168,11 @@ function PoligonoLectura({ poligono }) {
   const map = useMap();
   useEffect(() => {
     try {
-      map.fitBounds(L.geoJSON(poligono).getBounds(), { padding: [30, 30] });
+      const capa = L.geoJSON(poligono);
+      const bounds = capa.getBounds();
+      if (!bounds.isValid()) return;
+      map.invalidateSize();
+      map.fitBounds(bounds, { padding: [30, 30], maxZoom: 18 });
     } catch {
       /* geometría inválida: se ignora */
     }
@@ -212,12 +216,13 @@ function ControlesDibujo({ poligonoInicial, valueRef, onChange }) {
       const ha = Number((area({ type: "Feature", geometry, properties: {} }) / 10000).toFixed(2));
       const parcial = { poligono: geometry, areaTotalHa: ha };
 
-      // Si todavía no hay punto, usar el centro del polígono
-      const actual = valueRef.current;
-      if (!hayValor(actual.latitud) || !hayValor(actual.longitud)) {
+      // Siempre actualizar la ubicación al centroide del polígono
+      try {
         const [lng, lat] = centroid({ type: "Feature", geometry, properties: {} }).geometry.coordinates;
         parcial.latitud = redondear(lat);
         parcial.longitud = redondear(lng);
+      } catch {
+        /* ignorar */
       }
       onChangeRef.current(parcial);
     };
@@ -233,7 +238,12 @@ function ControlesDibujo({ poligonoInicial, valueRef, onChange }) {
         const layer = L.geoJSON(poligonoInicial, { style: ESTILO_POLIGONO }).getLayers()[0];
         layer.addTo(map);
         registrar(layer);
-        map.fitBounds(layer.getBounds(), { padding: [30, 30] });
+        try {
+          map.invalidateSize();
+          map.fitBounds(layer.getBounds(), { padding: [30, 30], maxZoom: 18 });
+        } catch {
+          /* ignorar */
+        }
       } catch {
         /* geometría inválida: se ignora */
       }
@@ -243,6 +253,12 @@ function ControlesDibujo({ poligonoInicial, valueRef, onChange }) {
       if (e.shape === "Marker") return;
       if (capaRef.current) map.removeLayer(capaRef.current);
       registrar(e.layer);
+      try {
+        map.invalidateSize();
+        map.fitBounds(e.layer.getBounds(), { padding: [30, 30], maxZoom: 18 });
+      } catch {
+        /* ignorar */
+      }
       publicar(e.layer);
     };
     const onRemove = (e) => {

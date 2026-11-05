@@ -1,0 +1,755 @@
+/* ===== Modulo Inventario ===== */
+
+/* ===== Pagina ===== */
+
+.inventario-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.inventario-cabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.inventario-titulo {
+  font-size: 24px;
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+.inventario-subtitulo {
+  color: #64748b;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.inventario-cabecera-acciones {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Píldora para alternar entre Gráficas y Tabla. Replica el lenguaje visual
+   de las píldoras de Procesos/Recepciones, pero con botones accesibles
+   (los radios de FiltroEstado se ocultan con display:none). */
+.vista-pildora {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 4px;
+  box-sizing: border-box;
+  background: rgba(229, 231, 235, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.vista-pildora::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 8px);
+  height: calc(100% - 8px);
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.vista-pildora[data-vista="tabla"]::before {
+  transform: translateX(calc(100% + 8px));
+}
+
+.vista-pildora button {
+  position: relative;
+  z-index: 1;
+  min-width: 100px;
+  height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #444;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.vista-pildora button[aria-pressed="true"] {
+  color: #2d5a27;
+}
+
+.vista-pildora button:focus-visible {
+  outline: 2px solid #2d5a27;
+  outline-offset: 2px;
+}
+
+/* El clic de mouse no debe dejar el anillo nativo del navegador; el teclado
+   conserva el anillo verde de :focus-visible. */
+.vista-pildora button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.inventario-error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 16px 18px;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+/* ===== Capas apiladas ===== */
+
+.capa {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.capa-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.capa-numero {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: #eef5ec;
+  color: #2d5a27;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.capa-titulos {
+  min-width: 0;
+}
+
+.capa-titulo {
+  font-size: 15px;
+  line-height: 1.3;
+  color: #0f172a;
+}
+
+.capa-subtitulo {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.capa-acciones {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.capa-cuerpo {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.capa-cuerpo--flush {
+  padding: 0;
+  gap: 0;
+}
+
+/* ===== Barra de filtros (capa 02) ===== */
+
+.capa-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.capa-toolbar .search-input {
+  flex: 1 1 260px;
+  min-width: 220px;
+}
+
+.capa-toolbar select {
+  padding: 9px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  color: #334155;
+}
+
+.inventario-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #334155;
+  user-select: none;
+}
+
+/* ===== Tarjetas KPI ===== */
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.kpi-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #94a3b8;
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.kpi-card.total {
+  border-left-color: #475569;
+}
+
+.kpi-card.cereza {
+  border-left-color: #b23a48;
+}
+
+.kpi-card.pergamino {
+  border-left-color: #d98c1f;
+}
+
+.kpi-card.oro {
+  border-left-color: #2e7d32;
+}
+
+.kpi-titulo {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.kpi-valor {
+  font-size: 26px;
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+.kpi-valor small {
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.kpi-detalle {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* ===== Subsecciones dentro de una capa ===== */
+
+.inventario-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+/* Divisor entre las dos subsecciones, sin tarjetas anidadas */
+.inventario-grid > * + * {
+  border-left: 1px solid #eef2f6;
+  padding-left: 20px;
+}
+
+.subseccion-titulo {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 12px;
+}
+
+.panel-vacio {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* ===== Grafica de etapas (CSS puro) ===== */
+
+.grafica-etapas {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.donut {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.donut-centro {
+  width: 90px;
+  height: 90px;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-centro strong {
+  font-size: 17px;
+  color: #0f172a;
+}
+
+.donut-centro span {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.donut-leyenda {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 170px;
+}
+
+.donut-leyenda li {
+  display: grid;
+  grid-template-columns: 12px 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.punto {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.leyenda-nombre {
+  color: #334155;
+}
+
+.leyenda-porcentaje {
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+}
+
+.leyenda-kg {
+  color: #0f172a;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Alertas ===== */
+
+.alertas-lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.alertas-lista li.alerta-activa {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fff8e1;
+  border-left: 3px solid #f57c00;
+  color: #8a4b00;
+}
+
+.alertas-ok {
+  font-size: 13px;
+  color: #2e7d32;
+  background: #e6f4ea;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+/* ===== Badges ===== */
+
+.badge-etapa,
+.badge-estado,
+.badge-neutral {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-etapa.cereza {
+  background: #fdecea;
+  color: #b23a48;
+}
+
+.badge-etapa.pergamino {
+  background: #fff8e1;
+  color: #d98c1f;
+}
+
+.badge-etapa.oro {
+  background: #e6f4ea;
+  color: #2e7d32;
+}
+
+.badge-estado.vendible {
+  background: #e6f4ea;
+  color: #2e7d32;
+}
+
+.badge-estado.en-proceso {
+  background: #fff8e1;
+  color: #f57c00;
+}
+
+.badge-estado.agotado {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.badge-estado.cancelado {
+  background: #fdecea;
+  color: #c62828;
+}
+
+.badge-estado.sin-inventario {
+  background: #fff;
+  color: #c62828;
+  border: 1px solid #f5b5b5;
+}
+
+.badge-neutral {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+/* ===== Tabla dentro de la capa ===== */
+
+.inventario-contador {
+  font-size: 12px;
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabla-vacia {
+  padding: 28px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* La capa ya aporta la superficie: se anula la tarjeta propia de la tabla */
+.capa-cuerpo--flush .table-container {
+  box-shadow: none;
+  border-radius: 0;
+  margin-top: 0;
+  padding: 0 18px 18px;
+  max-height: 480px;
+}
+
+.capa-cuerpo--flush .table-container thead th {
+  border-top-width: 14px;
+}
+
+.tabla-inventario {
+  overflow: auto;
+}
+
+/* Evita que las columnas se compriman y partan el contenido en muchas lineas */
+.tabla-inventario table {
+  min-width: 980px;
+}
+
+.tabla-inventario th:nth-child(8) {
+  width: 140px;
+}
+
+.tabla-inventario th,
+.tabla-inventario td {
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+/* Anula los limites heredados de tables.css pensados para otras tablas:
+   Cafetal y Etapa se recortaban a 140px y Acciones reservaba 240px. */
+.tabla-inventario td:nth-child(2),
+.tabla-inventario td:nth-child(3),
+.tabla-inventario td:nth-child(4) {
+  max-width: none;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+/* Productor y Cafetal pueden ocupar dos lineas; el resto va en una sola. */
+.tabla-inventario td:nth-child(2),
+.tabla-inventario td:nth-child(3) {
+  white-space: normal;
+}
+
+.tabla-inventario td:nth-child(1),
+.tabla-inventario td:nth-child(4),
+.tabla-inventario td:nth-child(5),
+.tabla-inventario td:nth-child(6),
+.tabla-inventario td:nth-child(7),
+.tabla-inventario td:nth-child(8),
+.tabla-inventario td:nth-child(9) {
+  white-space: nowrap;
+}
+
+.tabla-inventario th:last-child,
+.tabla-inventario td:last-child {
+  min-width: 0;
+  width: 1%;
+  white-space: nowrap;
+}
+
+/* ===== Esqueletos de carga ===== */
+
+.esqueleto-resumen {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.esqueleto-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.esqueleto-paneles {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.esqueleto-bloque {
+  height: 96px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #eef2f6 25%, #f8fafc 37%, #eef2f6 63%);
+  background-size: 400% 100%;
+  animation: esqueleto-brillo 1.4s ease infinite;
+}
+
+.esqueleto-alto {
+  height: 210px;
+}
+
+.capa-esqueleto-tabla {
+  padding: 18px;
+}
+
+.esqueleto-bloque.esqueleto-tabla {
+  height: 240px;
+}
+
+@keyframes esqueleto-brillo {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esqueleto-bloque {
+    animation: none;
+  }
+}
+
+/* ===== Modal de detalle ===== */
+
+.detalle-inventario {
+  width: 720px;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+
+.detalle-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.detalle-cabecera h2 {
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.detalle-badges {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.detalle-subtitulo {
+  margin: 22px 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.linea-tiempo {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.linea-tiempo li {
+  display: flex;
+  gap: 12px;
+}
+
+.punto-linea {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #2e7d32;
+  margin-top: 6px;
+  flex: 0 0 auto;
+}
+
+.punto-venta {
+  background: #2563eb;
+}
+
+.linea-tiempo div {
+  display: flex;
+  flex-direction: column;
+}
+
+.linea-tiempo strong {
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.linea-tiempo span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 1200px) {
+  .kpi-grid,
+  .esqueleto-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* El buscador ocupa su propia fila antes de que los controles se aprieten */
+@media (max-width: 1100px) {
+  .capa-toolbar .search-input {
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .inventario-grid,
+  .esqueleto-paneles {
+    grid-template-columns: 1fr;
+  }
+
+  .inventario-grid > * + * {
+    border-left: 0;
+    padding-left: 0;
+    border-top: 1px solid #eef2f6;
+    padding-top: 16px;
+  }
+
+  .detalle-inventario {
+    width: 94%;
+  }
+}
+
+@media (max-width: 560px) {
+  .kpi-grid,
+  .esqueleto-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .inventario-cabecera-acciones {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .vista-pildora {
+    width: 100%;
+  }
+
+  .vista-pildora button {
+    flex: 1;
+  }
+
+  .capa-header {
+    flex-wrap: wrap;
+  }
+
+  .capa-acciones {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .capa-cuerpo {
+    padding: 14px;
+  }
+
+  .capa-toolbar {
+    padding: 12px 14px;
+  }
+
+  .capa-toolbar .search-input {
+    flex-basis: 100%;
+  }
+
+  .capa-cuerpo--flush .table-container {
+    padding: 0 14px 14px;
+  }
+}

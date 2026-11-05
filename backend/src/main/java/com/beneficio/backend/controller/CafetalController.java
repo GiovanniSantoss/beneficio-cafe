@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.beneficio.backend.model.Cafetal;
+import com.beneficio.backend.model.Productor;
 import com.beneficio.backend.repository.CafetalRepository;
+import com.beneficio.backend.repository.ProductorRepository;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -24,9 +26,11 @@ import com.beneficio.backend.repository.CafetalRepository;
 public class CafetalController {
 
     private final CafetalRepository repository;
+    private final ProductorRepository productorRepository;
 
-    public CafetalController(CafetalRepository repository) {
+    public CafetalController(CafetalRepository repository, ProductorRepository productorRepository) {
         this.repository = repository;
+        this.productorRepository = productorRepository;
     }
 
 
@@ -39,6 +43,7 @@ public class CafetalController {
     @PostMapping
     public Cafetal create(@RequestBody Cafetal cafetal) {
         validarGeo(cafetal);
+        resolverProductor(cafetal);
         return repository.save(cafetal);
     }
 
@@ -48,6 +53,7 @@ public class CafetalController {
                           @RequestBody Cafetal data) {
 
         validarGeo(data);
+        resolverProductor(data);
 
         Cafetal c = repository.findById(id).orElseThrow();
 
@@ -61,6 +67,8 @@ public class CafetalController {
 
         if (data.getProductor() != null) {
             c.setProductor(data.getProductor());
+        } else {
+            throw badRequest("Debe seleccionar un productor");
         }
 
         return repository.saveAndFlush(c);
@@ -110,6 +118,19 @@ public class CafetalController {
                 throw badRequest("El polígono debe ser un GeoJSON de tipo Polygon");
             }
         }
+    }
+
+    private void resolverProductor(Cafetal cafetal) {
+        if (cafetal.getProductor() == null || cafetal.getProductor().getIdProductor() == null) {
+            throw badRequest("Debe seleccionar un productor");
+        }
+        Long id = cafetal.getProductor().getIdProductor();
+        if (id <= 0) {
+            throw badRequest("Debe seleccionar un productor");
+        }
+        Productor productor = productorRepository.findById(id)
+                .orElseThrow(() -> badRequest("El productor seleccionado no existe"));
+        cafetal.setProductor(productor);
     }
 
     private ResponseStatusException badRequest(String mensaje) {

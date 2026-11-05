@@ -146,6 +146,11 @@ td:nth-child(4) { /* Apellido */
   color: #2e7d32;
 }
 
+.estado.cancelado {
+  background: #fdecea;
+  color: #c62828;
+}
+
 
 /* ===== SCROLLBAR PERSONALIZADO ===== */
 

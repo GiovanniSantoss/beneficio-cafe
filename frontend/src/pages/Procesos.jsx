@@ -168,9 +168,11 @@ useEffect(() => {
           <FiltroEstado
             valor={filtroEstado}
             onChange={setFiltroEstado}
+            dinamico
             opciones={[
               { valor: "PENDIENTE", etiqueta: "Pendientes" },
               { valor: "PROCESADO", etiqueta: "Procesados" },
+              { valor: "CANCELADO", etiqueta: "Cancelados" },
               { valor: "TODOS", etiqueta: "Todos" },
             ]}
           />

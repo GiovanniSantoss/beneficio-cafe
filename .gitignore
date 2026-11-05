@@ -12,6 +12,7 @@ backend/src/main/resources/application-local.properties
 
 # ===== Dumps de base de datos =====
 *.sql
+!backend/db/*.sql
 *.dump
 *.bak
 *.backup

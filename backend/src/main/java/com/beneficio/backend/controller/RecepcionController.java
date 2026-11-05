@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ import com.beneficio.backend.repository.LoteRepository;
 import com.beneficio.backend.repository.ProductorRepository;
 import com.beneficio.backend.repository.RecepcionRepository;
 import com.beneficio.backend.repository.UsuarioRepository;
+import com.beneficio.backend.service.InventarioService;
 
 @RestController
 @RequestMapping("/recepciones")
@@ -45,6 +47,8 @@ public class RecepcionController {
     private UsuarioRepository usuarioRepository;
     @Autowired
     private EmpleadoRepository empleadoRepository;
+    @Autowired
+    private InventarioService inventarioService;
 
     // ===== LISTAR =====
     @GetMapping
@@ -60,6 +64,7 @@ public class RecepcionController {
 
     // ===== GUARDAR =====
     @PostMapping
+    @Transactional
     public Recepcion guardar(@RequestBody Recepcion recepcion) {
 
         // ===== VALIDACIONES BÁSICAS =====
@@ -78,6 +83,11 @@ public class RecepcionController {
         if (recepcion.getPesoInicial() == null 
             || recepcion.getPesoInicial().compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("El peso inicial debe ser mayor a 0");
+        }
+
+        if (recepcion.getUbicacionPrincipal() == null
+                || recepcion.getUbicacionPrincipal().isBlank()) {
+            throw new RuntimeException("La ubicación principal es obligatoria");
         }
 
         
@@ -136,6 +146,12 @@ public class RecepcionController {
 
         loteRepository.save(lote);
 
+        // ===== CREAR INVENTARIO INICIAL =====
+        inventarioService.crearParaLote(
+                lote,
+                guardada.getPesoInicial(),
+                recepcion.getUbicacionPrincipal().trim());
+
         return guardada;
     }
 
@@ -163,6 +179,7 @@ public Recepcion actualizar(@PathVariable Long id, @RequestBody Recepcion datos)
 }
 
     @PutMapping("/{id}/cancelar")
+    @Transactional
     public Recepcion cancelar(@PathVariable Long id) {
 
         Recepcion r = recepcionRepository.findById(id)
@@ -178,8 +195,10 @@ public Recepcion actualizar(@PathVariable Long id, @RequestBody Recepcion datos)
                 .orElse(null);
 
         if (lote != null) {
+            lote.setEstado("CANCELADO");
             lote.setActivo(false);
             loteRepository.save(lote);
+            inventarioService.anularPorCancelacion(lote);
         }
 
         return recepcionRepository.save(r);

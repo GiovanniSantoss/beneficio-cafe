@@ -1,8 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { sileo } from "sileo";
 import TablaCafetales from "../components/TablaCafetales";
 import MapaCafetal from "../components/MapaCafetal";
 import ProductorComboBox from "../components/ProductorComboBox";
+import {
+  esAutoGenerado,
+  limpiarMarcaAuto,
+  marcarComoAutoGenerado,
+  obtenerUbicacion,
+} from "../utils/geocodificacion";
 import "../styles/Cafetales.css";
 function Cafetales() {
   const [cafetales, setCafetales] = useState([]);
@@ -13,6 +19,9 @@ function Cafetales() {
   const [productores, setProductores] = useState([]);
   const [filtroEstado, setFiltroEstado] = useState("ACTIVOS");
   const [mapKey, setMapKey] = useState(0); // fuerza reiniciar el mapa (botón Limpiar)
+  const geoTimerRef = useRef(null);
+  const geoControllerRef = useRef(null);
+  const ultimaAutoRef = useRef("");
 
   const estadoInicial = {
     idProductor: "",
@@ -23,6 +32,21 @@ function Cafetales() {
     longitud: null,
     poligono: null,
     activo: true,
+  };
+
+  const cancelarGeo = () => {
+    if (geoTimerRef.current) {
+      clearTimeout(geoTimerRef.current);
+      geoTimerRef.current = null;
+    }
+    if (geoControllerRef.current) {
+      try {
+        geoControllerRef.current.abort();
+      } catch {
+        /* ignorar */
+      }
+      geoControllerRef.current = null;
+    }
   };
 
   const cargarCafetales = async () => {
@@ -42,8 +66,45 @@ function Cafetales() {
   const [formCafetal, setFormCafetal] = useState(estadoInicial);
 
   // El mapa envía solo los campos que cambian (lat, lng, polígono, área)
-  const actualizarGeo = (parcial) =>
-    setFormCafetal((prev) => ({ ...prev, ...parcial }));
+  const actualizarGeo = (parcial) => {
+    setFormCafetal((prev) => {
+      const next = { ...prev, ...parcial };
+      // Auto-rellenar ubicación con reverse geocoding al marcar/dibujar zona
+      if (parcial.latitud != null && parcial.longitud != null) {
+        const lat = parcial.latitud;
+        const lng = parcial.longitud;
+        const ubicacionActual = next.ubicacion;
+        const puedeAuto =
+          !ubicacionActual ||
+          ubicacionActual === "" ||
+          esAutoGenerado(ubicacionActual) ||
+          (ultimaAutoRef.current && ubicacionActual === ultimaAutoRef.current);
+
+        if (puedeAuto) {
+          cancelarGeo();
+          geoTimerRef.current = setTimeout(async () => {
+            const controller = new AbortController();
+            geoControllerRef.current = controller;
+            const addr = await obtenerUbicacion(lat, lng, { signal: controller.signal });
+            if (!addr) return;
+            setFormCafetal((current) => {
+              const curUbic = current.ubicacion;
+              const siguePermitiendo =
+                !curUbic ||
+                curUbic === "" ||
+                esAutoGenerado(curUbic) ||
+                (ultimaAutoRef.current && curUbic === ultimaAutoRef.current);
+              if (!siguePermitiendo) return current;
+              const marcado = marcarComoAutoGenerado(addr);
+              ultimaAutoRef.current = marcado;
+              return { ...current, ubicacion: marcado };
+            });
+          }, 900);
+        }
+      }
+      return next;
+    });
+  };
 
   const cafetalesFiltrados =
     cafetales
@@ -94,11 +155,12 @@ function Cafetales() {
   }, []);
 
   const limpiarDatos = (obj) => {
+    const ubicacionLimpia = obj.ubicacion ? limpiarMarcaAuto(obj.ubicacion) : null;
     return {
       idCafetal: obj.idCafetal || null,
 
       numParcela: obj.numParcela || null,
-      ubicacion: obj.ubicacion || null,
+      ubicacion: ubicacionLimpia || null,
       areaTotalHa: obj.areaTotalHa || null,
 
       // ?? en lugar de || para no perder coordenadas válidas con valor 0
@@ -115,6 +177,10 @@ function Cafetales() {
   };
 
   const guardarCafetal = async () => {
+    cancelarGeo();
+    if (!formCafetal.idProductor) {
+      throw new Error("Debe seleccionar un productor");
+    }
     const data = limpiarDatos(formCafetal);
 
     const url = editarId
@@ -135,11 +201,11 @@ function Cafetales() {
       let detalle = "";
       try {
         const body = await res.json();
-        detalle = body.message || body.error || "";
+        detalle = body.message || body.error || body.detail || "";
       } catch {
         /* respuesta sin JSON */
       }
-      throw new Error(`El servidor respondió ${res.status}. ${detalle}`);
+      throw new Error(detalle || `El servidor respondió ${res.status}.`);
     }
 
     await cargarCafetales();
@@ -147,6 +213,8 @@ function Cafetales() {
     setShowForm(false);
     setEditarId(null);
     setFormCafetal(estadoInicial);
+    ultimaAutoRef.current = "";
+    setMapKey((k) => k + 1);
   };
 
   const handleGuardar = () => {
@@ -202,6 +270,8 @@ function Cafetales() {
   };
 
   const handleEditar = (c) => {
+    cancelarGeo();
+    ultimaAutoRef.current = "";
     setEditarId(c.idCafetal);
 
     setFormCafetal({
@@ -216,9 +286,17 @@ function Cafetales() {
 
       idProductor: c.productor?.idProductor || "",
     });
+    setMapKey((k) => k + 1);
 
     setShowForm(true);
   };
+
+  useEffect(() => {
+    return () => {
+      cancelarGeo();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div>
@@ -269,9 +347,12 @@ function Cafetales() {
           <button
             className="btn-primary"
             onClick={() => {
+              cancelarGeo();
+              ultimaAutoRef.current = "";
               setShowForm(true);
               setEditarId(null);
               setFormCafetal(estadoInicial);
+              setMapKey((k) => k + 1);
             }}
           >
             Nuevo Cafetal
@@ -292,7 +373,14 @@ function Cafetales() {
       {showForm && (
         <div className="modal-overlay">
           <div className="modal modal-cafetal">
-            <button className="modal-close" onClick={() => setShowForm(false)}>
+            <button
+              className="modal-close"
+              onClick={() => {
+                cancelarGeo();
+                ultimaAutoRef.current = "";
+                setShowForm(false);
+              }}
+            >
               ×
             </button>
 
@@ -333,13 +421,19 @@ function Cafetales() {
 
                 <input
                   placeholder="Ubicación"
-                  value={formCafetal.ubicacion || ""}
-                  onChange={(e) =>
+                  value={
+                    formCafetal.ubicacion
+                      ? limpiarMarcaAuto(formCafetal.ubicacion)
+                      : ""
+                  }
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    ultimaAutoRef.current = "";
                     setFormCafetal({
                       ...formCafetal,
-                      ubicacion: e.target.value,
-                    })
-                  }
+                      ubicacion: val,
+                    });
+                  }}
                 />
 
                 <input
@@ -369,6 +463,8 @@ function Cafetales() {
                   type="button"
                   className="btn-clear"
                   onClick={() => {
+                    cancelarGeo();
+                    ultimaAutoRef.current = "";
                     setFormCafetal(estadoInicial);
                     setEditarId(null);
                     setMapKey((k) => k + 1);
@@ -377,18 +473,20 @@ function Cafetales() {
                   Limpiar
                 </button>
 
+                <button className="btn-primary" type="submit">
+                  Guardar
+                </button>
+
                 <button
                   type="button"
                   className="btn-cancel"
                   onClick={() => {
+                    cancelarGeo();
+                    ultimaAutoRef.current = "";
                     setShowForm(false);
                   }}
                 >
                   Cancelar
-                </button>
-
-                <button className="btn-primary" type="submit">
-                  Guardar
                 </button>
               </div>
             </form>
