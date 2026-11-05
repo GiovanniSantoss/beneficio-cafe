@@ -6,7 +6,7 @@ export default function Sidebar({ setVista, vista, usuario }) {
     .toLowerCase();
 
   const esDueno = rol === "dueño" || rol === "dueno";
-  const esAdministrador = rol === "administrador";
+  const esAdministrador = rol === "administrador" || rol === "admin";
   const esRecepcionista = rol === "recepcionista";
 
   const opciones = [];
