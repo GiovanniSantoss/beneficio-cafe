@@ -3,6 +3,8 @@ package com.beneficio.backend.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "recepcion")
@@ -53,6 +56,14 @@ public class Recepcion {
 
     @Column(name = "estado")
     private String estado = "PENDIENTE";
+
+    /**
+     * Ubicación principal capturada al crear la recepción.
+     * No se guarda en la tabla recepcion: se persiste en inventario.ubicacion.
+     */
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String ubicacionPrincipal;
 
     // ===== GETTERS Y SETTERS =====
     public Long getIdRecepcion() {
@@ -135,5 +146,13 @@ public class Recepcion {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public String getUbicacionPrincipal() {
+        return ubicacionPrincipal;
+    }
+
+    public void setUbicacionPrincipal(String ubicacionPrincipal) {
+        this.ubicacionPrincipal = ubicacionPrincipal;
     }
 }

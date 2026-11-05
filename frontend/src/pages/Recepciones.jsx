@@ -32,6 +32,7 @@ function Recepciones() {
   cafetal: { idCafetal: "" },
   empleado: { idEmpleado: "" },
   pesoInicial: "",
+  ubicacionPrincipal: "",
   observaciones: "",
 };
 
@@ -128,20 +129,31 @@ function Recepciones() {
       return;
     }
 
+    if (!form.ubicacionPrincipal.trim()) {
+      alert("Captura la ubicación principal del café");
+      return;
+    }
+
     const body = {
     productor: { idProductor: Number(form.productor.idProductor) },
     cafetal: { idCafetal: Number(form.cafetal.idCafetal) },
     usuario: { idUsuario: 1 },
     empleado: { idEmpleado: Number(form.empleado.idEmpleado) },
     pesoInicial: Number(form.pesoInicial),
+    ubicacionPrincipal: form.ubicacionPrincipal.trim(),
     observaciones: form.observaciones,
   };
 
-    await fetch("http://localhost:8080/recepciones", {
+    const res = await fetch("http://localhost:8080/recepciones", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+
+    if (!res.ok) {
+      alert("No se pudo guardar la recepción. Revisa los datos e intenta de nuevo.");
+      return;
+    }
 
     await cargarTodo();
     setShowForm(false);
@@ -283,6 +295,15 @@ function Recepciones() {
                 value={form.pesoInicial}
                 onChange={(e) =>
                   setForm({ ...form, pesoInicial: e.target.value })
+                }
+              />
+
+              <input
+                type="text"
+                placeholder="Ubicación principal (ej. Almacén principal)"
+                value={form.ubicacionPrincipal}
+                onChange={(e) =>
+                  setForm({ ...form, ubicacionPrincipal: e.target.value })
                 }
               />
 

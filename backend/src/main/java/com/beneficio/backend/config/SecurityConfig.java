@@ -22,6 +22,8 @@ public class SecurityConfig {
                 .requestMatchers("/compradores/**").permitAll()
                 .requestMatchers("/ventas/**").permitAll()
                 .requestMatchers("/empleados/**").permitAll()
+                .requestMatchers("/inventario/**").permitAll()
+                .requestMatchers("/error").permitAll()
 
                 .anyRequest().authenticated()
             )

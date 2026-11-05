@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import com.beneficio.backend.model.Lote;
 import com.beneficio.backend.model.Venta;
 import com.beneficio.backend.repository.LoteRepository;
 import com.beneficio.backend.repository.VentaRepository;
+import com.beneficio.backend.service.InventarioService;
 
 @RestController
 @RequestMapping("/ventas")
@@ -27,33 +29,52 @@ public class VentaController {
     @Autowired
     private LoteRepository loteRepository;
 
+    @Autowired
+    private InventarioService inventarioService;
+
     @GetMapping
     public List<Venta> getAll() {
         return ventaRepository.findAll();
     }
 
     @PostMapping
+    @Transactional
     public Venta create(@RequestBody Venta venta) {
+
+        if (venta.getLote() == null || venta.getLote().getIdLote() == null) {
+            throw new RuntimeException("El lote es obligatorio");
+        }
 
         Lote lote = loteRepository.findById(venta.getLote().getIdLote())
                 .orElseThrow(() -> new RuntimeException("Lote no encontrado"));
 
-        if (venta.getCantidadVendida().compareTo(BigDecimal.ZERO) <= 0) {
+        // Solo el café en etapa ORO es vendible
+        if (!"ORO".equalsIgnoreCase(lote.getEstadoCafe())) {
+            throw new RuntimeException("Solo se puede vender café en etapa ORO");
+        }
+
+        if (!Boolean.TRUE.equals(lote.getActivo())) {
+            throw new RuntimeException("El lote está inactivo");
+        }
+
+        if (venta.getCantidadVendida() == null
+                || venta.getCantidadVendida().compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Cantidad inválida");
         }
 
-        if (venta.getCantidadVendida().compareTo(lote.getPesoActual()) > 0) {
-            throw new RuntimeException("No hay suficiente café en el lote");
-        }
+        // Valida stock y descuenta del inventario
+        BigDecimal nuevoStock = inventarioService.descontarPorVenta(
+                lote, venta.getCantidadVendida());
 
-        BigDecimal nuevoPeso = lote.getPesoActual().subtract(venta.getCantidadVendida());
-        lote.setPesoActual(nuevoPeso);
+        lote.setPesoActual(nuevoStock);
 
-        if (nuevoPeso.compareTo(BigDecimal.ZERO) == 0) {
+        if (nuevoStock.compareTo(BigDecimal.ZERO) == 0) {
             lote.setActivo(false);
         }
 
         loteRepository.save(lote);
+
+        venta.setLote(lote);
 
         return ventaRepository.save(venta);
     }

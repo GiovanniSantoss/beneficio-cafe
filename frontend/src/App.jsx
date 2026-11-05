@@ -14,6 +14,7 @@ import Cafetales from "./pages/Cafetales";
 import DashboardLayout from "./layout/DashboardLayout";
 import Recepciones from "./pages/Recepciones";
 import Procesos from "./pages/Procesos";
+import Inventario from "./pages/Inventario";
 
 
 function App() {
@@ -33,6 +34,8 @@ function App() {
         {vista === "recepciones" && <Recepciones />}
 
         {vista === "procesos" && <Procesos />}
+
+        {vista === "inventario" && <Inventario />}
 
       </DashboardLayout>
 
