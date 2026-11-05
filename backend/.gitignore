@@ -4,6 +4,12 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Secretos - usar application.properties.example como plantilla
+src/main/resources/application.properties
+.env
+*.pem
+*.key
+
 ### STS ###
 .apt_generated
 .classpath
