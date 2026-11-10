@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -48,8 +50,9 @@ public class Recepcion {
     @Column(name = "fecha_hora")
     private LocalDateTime fechaHora;
 
-    @Column(name = "observaciones")
-    private String observaciones;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "calidad_cafe")
+    private CalidadCafe calidadCafe;
 
     @Column(name = "activo")
     private Boolean activo;
@@ -124,12 +127,12 @@ public class Recepcion {
         this.fechaHora = fechaHora;
     }
 
-    public String getObservaciones() {
-        return observaciones;
+    public CalidadCafe getCalidadCafe() {
+        return calidadCafe;
     }
 
-    public void setObservaciones(String observaciones) {
-        this.observaciones = observaciones;
+    public void setCalidadCafe(CalidadCafe calidadCafe) {
+        this.calidadCafe = calidadCafe;
     }
 
     public Boolean getActivo() {

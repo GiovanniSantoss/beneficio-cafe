@@ -90,6 +90,10 @@ public class RecepcionController {
             throw new RuntimeException("La ubicación principal es obligatoria");
         }
 
+        if (recepcion.getCalidadCafe() == null) {
+            throw new RuntimeException("La calidad de café es obligatoria");
+        }
+
         
 
         // ===== TRAER DATOS REALES DE BD =====
@@ -128,7 +132,7 @@ public class RecepcionController {
         nueva.setUsuario(usuarioBD);
         nueva.setEmpleado(empleadoBD);
         nueva.setPesoInicial(recepcion.getPesoInicial());
-        nueva.setObservaciones(recepcion.getObservaciones());
+        nueva.setCalidadCafe(recepcion.getCalidadCafe());
         nueva.setFechaHora(java.time.LocalDateTime.now());
         nueva.setActivo(true);
         nueva.setEstado("PENDIENTE");
@@ -171,8 +175,8 @@ public Recepcion actualizar(@PathVariable Long id, @RequestBody Recepcion datos)
         throw new RuntimeException("No puedes modificar una recepción cancelada");
     }
 
-    if (datos.getObservaciones() != null) {
-        recepcion.setObservaciones(datos.getObservaciones());
+    if (datos.getCalidadCafe() != null) {
+        recepcion.setCalidadCafe(datos.getCalidadCafe());
     }
 
     return recepcionRepository.save(recepcion);

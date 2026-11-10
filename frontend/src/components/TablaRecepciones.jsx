@@ -135,8 +135,15 @@ export default function TablaRecepciones({
               </div>
 
               <div className="full-width">
-                <b>Observaciones</b>
-                {detalleSeleccionado.observaciones || "—"}
+                <b>Calidad de café</b>
+                {
+                  {
+                    BUENA: "Buena",
+                    BAJA: "Baja"
+                  }[detalleSeleccionado.calidadCafe] ||
+                  detalleSeleccionado.calidadCafe ||
+                  "—"
+                }
               </div>
             </div>
 

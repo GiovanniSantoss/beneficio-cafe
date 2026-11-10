@@ -55,12 +55,6 @@ function MapaCafetalInterno({
     hayValor(latitud) && hayValor(longitud) && Number.isFinite(lat) && Number.isFinite(lng);
   const posicion = tienePunto ? [lat, lng] : null;
 
-  // Mantiene siempre el valor más reciente para los handlers de Geoman
-  const valueRef = useRef(value);
-  useEffect(() => {
-    valueRef.current = value;
-  });
-
   // Instancia de Leaflet, para que la barra (fuera del mapa) pueda controlarlo
   const [mapa, setMapa] = useState(null);
 
@@ -134,7 +128,6 @@ function MapaCafetalInterno({
             />
             <ControlesDibujo
               poligonoInicial={poligono}
-              valueRef={valueRef}
               onChange={onChange}
             />
           </>
@@ -199,7 +192,7 @@ function ClickParaMarcar({ onPunto }) {
 }
 
 /** Herramientas de dibujo (Leaflet-Geoman). Un cafetal = un polígono. */
-function ControlesDibujo({ poligonoInicial, valueRef, onChange }) {
+function ControlesDibujo({ poligonoInicial, onChange }) {
   const map = useMap();
   const capaRef = useRef(null);
   const onChangeRef = useRef(onChange);

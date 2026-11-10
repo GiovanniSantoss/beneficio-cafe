@@ -131,7 +131,7 @@ export default function DetalleInventario({ detalle, onCerrar }) {
               <li>
                 <span className="punto-linea" />
                 <div>
-                  <strong>Recepción</strong>
+                  <strong>RECEPCIÓN</strong>
                   <span>
                     {data.inventario.recepcion
                       ? `${formatoKg(data.inventario.recepcion.pesoInicial)} kg · ${formatoFecha(

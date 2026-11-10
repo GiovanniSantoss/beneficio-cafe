@@ -33,7 +33,7 @@ function Recepciones() {
   empleado: { idEmpleado: "" },
   pesoInicial: "",
   ubicacionPrincipal: "",
-  observaciones: "",
+  calidadCafe: "BUENA",
 };
 
   const [form, setForm] = useState(estadoInicial);
@@ -141,7 +141,7 @@ function Recepciones() {
     empleado: { idEmpleado: Number(form.empleado.idEmpleado) },
     pesoInicial: Number(form.pesoInicial),
     ubicacionPrincipal: form.ubicacionPrincipal.trim(),
-    observaciones: form.observaciones,
+    calidadCafe: form.calidadCafe,
   };
 
     const res = await fetch("http://localhost:8080/recepciones", {
@@ -309,13 +309,16 @@ function Recepciones() {
 
               
 
-              <textarea
-                placeholder="Observaciones"
-                value={form.observaciones}
+              <select
+                value={form.calidadCafe}
                 onChange={(e) =>
-                  setForm({ ...form, observaciones: e.target.value })
+                  setForm({ ...form, calidadCafe: e.target.value })
                 }
-              />
+                aria-label="Calidad de café"
+              >
+                <option value="BUENA">Buena</option>
+                <option value="BAJA">Baja</option>
+              </select>
 
               <div className="form-actions">
                 <button type="submit" className="btn-primary">
