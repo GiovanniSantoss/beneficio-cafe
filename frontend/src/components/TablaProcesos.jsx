@@ -133,9 +133,16 @@ export default function TablaProcesos({ lotes, onProcesar }) {
               </div>
 
               <div className="full-width">
-                <b>Observaciones</b>
-                
-                {detalleSeleccionado.recepcion?.observaciones || "—"}
+                <b>Calidad de café</b>
+
+                {
+                  {
+                    BUENA: "Buena",
+                    BAJA: "Baja",
+                  }[detalleSeleccionado.recepcion?.calidadCafe] ||
+                  detalleSeleccionado.recepcion?.calidadCafe ||
+                  "—"
+                }
               </div>
             </div>
 
